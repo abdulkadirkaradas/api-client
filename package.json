@@ -1,13 +1,28 @@
 {
   "name": "api-client",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abdulkadirkaradas/api-client"
+  },
+  "keywords": [
+    "api",
+    "laravel",
+    "react",
+    "vuejs",
+    "api client"
+  ],
+  "author": "AK(saferias)",
+  "bugs": {
+    "url": "https://github.com/abdulkadirkaradas/api-client/issues"
+  },
+  "homepage": "https://github.com/abdulkadirkaradas/api-client#readme",
   "license": "ISC",
   "description": "",
   "devDependencies": {
