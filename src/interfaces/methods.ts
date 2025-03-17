@@ -1,5 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 
+export type IMethodsRequestConfig = Omit<AxiosRequestConfig, "url" | "data">;
+
 export interface IMethods {
     get(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse>;
     post(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse>;
