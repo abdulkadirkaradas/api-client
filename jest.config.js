@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: "jsdom",
-  testMatch: ["**/tests/**/*.test.ts"],
+  testMatch: ["**/tests/**/**/*.test.ts"],
   transform: {
     "^.+\\.ts$": "ts-jest",
   },
