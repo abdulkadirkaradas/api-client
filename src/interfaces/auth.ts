@@ -8,6 +8,8 @@ export interface AuthorizationServiceConfig {
   config?: APIClientConfig;
 }
 
+export type AuthorizationTokenType = 'accessToken' | 'refreshToken';
+
 export interface AuthorizationTokenConfig {
   requestTokenConfig?: {
     accessTokenName?: string | null;
