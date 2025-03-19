@@ -1,7 +1,7 @@
 import { AuthorizationServiceConfig } from '../src/interfaces/auth';
 import { TestSetup } from './utils/testSetup';
 
-describe('API Client Interceptor', () => {
+describe('API Client Methods', () => {
   let setup: TestSetup;
 
   beforeEach(() => {
