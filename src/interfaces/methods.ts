@@ -10,3 +10,11 @@ export interface IMethods {
     patch(url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse>;
     head(url: string, data?: any): Promise<AxiosResponse>;
 };
+
+export interface RequestConfig extends AxiosRequestConfig {
+  methodName: string;
+}
+
+export type GeneratedMethods<T extends { methodName: string }[]> = {
+  [K in T[number]['methodName']]: () => Promise<AxiosResponse>;
+};
