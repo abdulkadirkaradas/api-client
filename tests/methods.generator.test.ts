@@ -91,4 +91,29 @@ describe("API Client Method Generator", () => {
         console.error(result);
       });
   });
+
+  it("Throws error when duplicate method names are bound", () => {
+    setup.mock.onGet("/categories/1").reply(200, testMethodStubs.get);
+
+    setup.methodGenerator.bind([
+      { methodName: "getPosts", method: "GET", url: "/posts/1" },
+      { methodName: "getPosts", method: "GET", url: "/posts/2" },
+    ]);
+
+    expect(() => {
+      setup.methodGenerator.getMethods().getPosts();
+    }).toThrow('Method name "getPosts" is already exists');
+  });
+
+  it("Throws error when HTTP method is missing", () => {
+    setup.mock.onGet("/categories/1").reply(200, testMethodStubs.get);
+
+    setup.methodGenerator.bind([
+      { methodName: "getPosts", url: "/posts/1" },
+    ]);
+
+    expect(() => {
+      setup.methodGenerator.getMethods().getPosts();
+    }).toThrow('HTTP method for "getPosts" cannot be empty or null.');
+  });
 });
