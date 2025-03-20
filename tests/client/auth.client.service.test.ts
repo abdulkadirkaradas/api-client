@@ -23,16 +23,16 @@ describe("API Client Autorization Service", () => {
       requestTokenConfig: {
         accessTokenName: "access_token",
         refreshTokenName: "refresh_token",
-      }
+      },
     });
 
     setup.clientService.setStorageType({
-      sessionStorage: "localStorage",
+      localStorage: "localStorage",
     });
     storage = setup.clientService.getStorage("localStorage");
   });
 
-  it("Is token config set", () => {
+  it("should set token configuration correctly", () => {
     let tokenConfig: AuthorizationTokenConfig = {
       tokenStorageType: {
         accessToken: "localStorage",
@@ -45,7 +45,7 @@ describe("API Client Autorization Service", () => {
     expect(setup.clientService.auth.getTokenConfig()).toBe(tokenConfig);
   });
 
-  it("Is register service works", () => {
+  it("should handle user registration successfully", () => {
     let registerStub: {} = {
       id: 1,
       email: "string",
@@ -65,7 +65,7 @@ describe("API Client Autorization Service", () => {
       },
     };
 
-    setup.mock.onPost("/users/").reply(200, registerStub);
+    setup.mock.onPost(config.url).reply(200, registerStub);
 
     setup.clientService.auth
       .register(config)
@@ -83,7 +83,7 @@ describe("API Client Autorization Service", () => {
       });
   });
 
-  it("Is login service works", () => {
+  it("should handle user login successfully", () => {
     let loginStub: {} = {
       access_token: "string",
       refresh_token: "string",
@@ -97,7 +97,7 @@ describe("API Client Autorization Service", () => {
       },
     };
 
-    setup.mock.onPost("/auth/login").reply(200, loginStub);
+    setup.mock.onPost(config.url).reply(200, loginStub);
 
     setup.clientService.auth
       .login(config)
@@ -114,7 +114,7 @@ describe("API Client Autorization Service", () => {
   //TODO logout function structure will be refactored
   // it('Is logout service works', () => {});
 
-  it("Is refresh token service works", () => {
+  it("should handle refresh token service successfully", () => {
     let resfreshTokenStub: Object = {
       access_token: "string",
       refresh_token: "string",

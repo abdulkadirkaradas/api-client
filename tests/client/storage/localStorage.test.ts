@@ -1,5 +1,3 @@
-// This test file is the deprecated.
-
 import "jest-localstorage-mock";
 import { TestSetup } from "../../utils/testSetup";
 import { AuthorizationServiceConfig } from "../../../src/interfaces/auth";
@@ -27,7 +25,7 @@ describe("API Client Storage/LocalStorage servie", () => {
     storage = setup.clientService.getStorage("localStorage");
   });
 
-  it("is SET function works", () => {
+  it("should store tokens in localStorage after login", () => {
     let config: AuthorizationServiceConfig = {
       url: "/auth/login",
       data: {
@@ -52,13 +50,13 @@ describe("API Client Storage/LocalStorage servie", () => {
       });
   });
 
-  it("Is GET function works", () => {
+  it("should retrieve stored items from localStorage", () => {
     setTestValues();
 
     expect(storage?.get("testItem")).toBe("test");
   });
 
-  it("Is REMOVE function works", () => {
+  it("should remove a specific item from localStorage", () => {
     setTestValues();
 
     storage?.remove("testItem");
@@ -66,7 +64,7 @@ describe("API Client Storage/LocalStorage servie", () => {
     expect(storage?.get("testItem")).toBeNull();
   });
 
-  it("Is CLEAR function works", () => {
+  it("should clear all items from localStorage", () => {
     setTestValues();
 
     storage?.clear();

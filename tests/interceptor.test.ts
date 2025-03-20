@@ -11,7 +11,7 @@ describe('API Client Interceptor', () => {
     setup.mock.restore();
   });
 
-  it('Is request interceptor headers set properly', () => {
+  it('should set request interceptor headers properly', () => {
     const authToken = 'auth_token';
 
     setup.instance.interceptor.request.setHeaders({
@@ -20,7 +20,7 @@ describe('API Client Interceptor', () => {
     expect(setup.instance.interceptor.request.getHeaderValue("Authorization")).toBe(`Bearer ${authToken}`);
   });
 
-  it('Is response interceptor headers set properly', () => {
+  it('should set response interceptor headers properly', () => {
     const cacheControl = 'no-store';
 
     setup.instance.interceptor.response.setHeaders({

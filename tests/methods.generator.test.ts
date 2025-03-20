@@ -20,14 +20,14 @@ describe("API Client Method Generator", () => {
     setup.mock.restore();
   });
 
-  it("Is BIND method works", () => {
+  it("should bind methods correctly", () => {
     expect(generatedMethods).toHaveProperty("fetchCategories");
     expect(generatedMethods).toHaveProperty("createUser");
     expect(generatedMethods).toHaveProperty("updateUser");
     expect(generatedMethods).toHaveProperty("deleteProduct");
   });
 
-  it("Is fetchCategories method works", () => {
+  it("should successfully fetch categories", () => {
     setup.mock.onGet("/categories/1").reply(200, testMethodStubs.get);
 
     generatedMethods
@@ -43,7 +43,7 @@ describe("API Client Method Generator", () => {
       });
   });
 
-  it("Is createUser method works", () => {
+  it("should successfully create a user", () => {
     setup.mock.onPost("/users/").reply(200, testMethodStubs.post);
 
     generatedMethods
@@ -61,7 +61,7 @@ describe("API Client Method Generator", () => {
       });
   });
 
-  it("Is updateUser method works", () => {
+  it("should successfully update a user", () => {
     setup.mock.onPut("/users/1").reply(200, testMethodStubs.put);
 
     generatedMethods
@@ -79,7 +79,7 @@ describe("API Client Method Generator", () => {
       });
   });
 
-  it("Is deleteProduct method works", () => {
+  it("should successfully delete a product", () => {
     setup.mock.onDelete("/products/1").reply(200, {});
 
     generatedMethods
@@ -92,7 +92,7 @@ describe("API Client Method Generator", () => {
       });
   });
 
-  it("Throws error when duplicate method names are bound", () => {
+  it("should throw an error when duplicate method names are bound", () => {
     setup.mock.onGet("/categories/1").reply(200, testMethodStubs.get);
 
     setup.methodGenerator.bind([
@@ -105,7 +105,7 @@ describe("API Client Method Generator", () => {
     }).toThrow('Method name "getPosts" is already exists');
   });
 
-  it("Throws error when HTTP method is missing", () => {
+  it("should throw an error when HTTP method is missing", () => {
     setup.mock.onGet("/categories/1").reply(200, testMethodStubs.get);
 
     setup.methodGenerator.bind([

@@ -12,7 +12,7 @@ describe('API Client Methods', () => {
     setup.mock.restore();
   });
 
-  it('Is GET method works', () => {
+  it('should handle GET requests correctly', () => {
     let getMethodStub: Object = {
       id: 1,
       name: 'string',
@@ -40,7 +40,7 @@ describe('API Client Methods', () => {
       });
   });
 
-  it('Is POST method works', () => {
+  it('should handle POST requests correctly', () => {
     let postMethodStub: Object = {
       id: 1,
       name: 'string',
@@ -72,7 +72,7 @@ describe('API Client Methods', () => {
       });
   });
 
-  it('Is PUT method works', () => {
+  it('should handle PUT requests correctly', () => {
     let putMethodStub: Object = {
       id: 1,
       name: 'string',
@@ -104,7 +104,7 @@ describe('API Client Methods', () => {
       });
   });
 
-  it('Is DELETE method works', () => {
+  it('should handle DELETE requests correctly', () => {
     let config: AuthorizationServiceConfig = {
       url: '/products/1',
     };
