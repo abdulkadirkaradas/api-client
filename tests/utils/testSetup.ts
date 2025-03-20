@@ -4,6 +4,7 @@ import { APIClientConfig } from "../../src/interfaces/core";
 import { createAPIClient } from "../../src/index";
 import { ClientStorageFactory } from "../../src/utils/storage/client/storageFactory";
 import { ClientServices } from "../../src/core/services/client/clientService";
+import { MethodGenerator } from "../../src/methods/generator";
 
 export class TestSetup {
   public config: APIClientConfig;
@@ -11,6 +12,7 @@ export class TestSetup {
   public instance: APIClient;
   public clientStorage: ClientStorageFactory;
   public clientService: ClientServices;
+  public methodGenerator: MethodGenerator;
 
   constructor() {
     this.config = {
@@ -28,6 +30,7 @@ export class TestSetup {
 
     const create = createAPIClient(this.config);
     this.instance = create.ApiClient;
+    this.methodGenerator = create.MethodGenerator;
     this.clientService = create.Services.client;
     this.clientStorage = create.Storage.client;
     this.mock = new MockAdapter(this.instance.getInstance());
