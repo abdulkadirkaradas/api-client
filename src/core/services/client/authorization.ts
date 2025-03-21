@@ -262,17 +262,17 @@ export class AuthorizationService {
       config.config
     );
 
-    if (this.statusCodes.includes(response.status)) {
-      if (refreshTokenExists) {
-        this.handleTokenResponse(response, "accessToken");
-        this.handleTokenResponse(response, "refreshToken");
-      } else {
-        this.handleTokenResponse(response, "accessToken");
-      }
-
-      return response;
-    } else {
-      throw new Error(`Error in refresh token: ${response.data}`);
+    if (!response) {
+      throw new Error(`Error in refresh token: ${response}`);
     }
+
+    if (response.status && this.statusCodes.includes(response.status)) {
+      this.handleTokenResponse(response, "accessToken");
+      if (refreshTokenExists) {
+      this.handleTokenResponse(response, "refreshToken");
+      }
+    }
+
+    return response;
   }
 }
