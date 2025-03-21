@@ -174,26 +174,20 @@ export class AuthorizationService {
       config.config
     );
 
-    if (!response) {
-      throw new Error("Response is undefined!");
+    if (!response || !this.statusCodes.includes(response.status)) {
+      throw response;
     }
 
     if (
-      this.requestToken?.accessTokenName === undefined &&
-      this.requestToken?.refreshTokenName === undefined
+      this.requestToken?.accessTokenName ||
+      this.requestToken?.refreshTokenName
     ) {
-      return response;
+      [this.accessTokenName, this.refreshTokenName].forEach((tokenType) =>
+        this.handleTokenResponse(response, tokenType as AuthorizationTokenType)
+      );
     }
 
-    if (response.data && this.statusCodes.includes(response.status)) {
-      //TODO 'handleTokenResponse' calls will be merged and simplified
-      this.handleTokenResponse(response, "accessToken");
-      this.handleTokenResponse(response, "refreshToken");
-
-      return response;
-    } else {
-      throw new Error(`Error in login: ${response.data}`);
-    }
+    return response;
   }
 
   /**
@@ -208,14 +202,14 @@ export class AuthorizationService {
       config.config
     );
 
-    if (this.statusCodes.includes(response.status)) {
-      this.handleTokenResponse(response, "accessToken");
-      this.handleTokenResponse(response, "refreshToken");
-
-      return response;
-    } else {
-      throw new Error(`Error in registration: ${response.data}`);
+    if (!response || !this.statusCodes.includes(response.status)) {
+      throw response;
     }
+
+    this.handleTokenResponse(response, "accessToken");
+    this.handleTokenResponse(response, "refreshToken");
+
+    return response;
   }
 
   /**
@@ -230,15 +224,15 @@ export class AuthorizationService {
       config.config
     );
 
-    if (this.statusCodes.includes(response.status)) {
-      //TODO 'removeToken' calls will be merged and simplified
-      this.removeToken("accessToken");
-      this.removeToken("refreshToken");
-
-      return response;
-    } else {
-      throw new Error(`Error in logout: ${response.data}`);
+    if (!response || !this.statusCodes.includes(response.status)) {
+      throw response;
     }
+
+    [this.accessTokenName, this.refreshTokenName].forEach((tokenType) =>
+      this.removeToken(tokenType as AuthorizationTokenType)
+    );
+
+    return response;
   }
 
   /**
@@ -254,7 +248,7 @@ export class AuthorizationService {
    */
   public async refreshToken(
     config: AuthorizationServiceConfig,
-    refreshTokenExists?: boolean
+    refreshTokenExists = false
   ) {
     const response = await this.methods.post(
       config.url,
@@ -262,16 +256,15 @@ export class AuthorizationService {
       config.config
     );
 
-    if (!response) {
-      throw new Error(`Error in refresh token: ${response}`);
+    if (!response || !this.statusCodes.includes(response.status)) {
+      throw response;
     }
 
-    if (response.status && this.statusCodes.includes(response.status)) {
-      this.handleTokenResponse(response, "accessToken");
-      if (refreshTokenExists) {
-      this.handleTokenResponse(response, "refreshToken");
-      }
-    }
+    [this.accessTokenName, refreshTokenExists && this.refreshTokenName]
+      .filter(Boolean)
+      .forEach((tokenType) =>
+        this.handleTokenResponse(response, tokenType as AuthorizationTokenType)
+      );
 
     return response;
   }
