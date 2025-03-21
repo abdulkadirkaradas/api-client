@@ -32,6 +32,10 @@ describe("API Client Autorization Service", () => {
     storage = setup.clientService.getStorage("localStorage");
   });
 
+  afterEach(() => {
+    setup.mock.restore();
+  });
+
   it("should set token configuration correctly", () => {
     let tokenConfig: AuthorizationTokenConfig = {
       tokenStorageType: {
@@ -45,7 +49,7 @@ describe("API Client Autorization Service", () => {
     expect(setup.clientService.auth.getTokenConfig()).toBe(tokenConfig);
   });
 
-  it("should handle user registration successfully", () => {
+  it("should handle user registration service successfully", () => {
     let registerStub: {} = {
       id: 1,
       email: "string",
@@ -83,7 +87,7 @@ describe("API Client Autorization Service", () => {
       });
   });
 
-  it("should handle user login successfully", () => {
+  it("should handle user login service successfully", () => {
     let loginStub: {} = {
       access_token: "string",
       refresh_token: "string",
@@ -137,6 +141,78 @@ describe("API Client Autorization Service", () => {
       })
       .catch(function (result) {
         console.error(result);
+      });
+  });
+
+  it("should handle 401 error for login service", () => {
+    let loginStub: Object = {
+      message: "string",
+      statusCode: 401,
+    };
+
+    let config: AuthorizationServiceConfig = {
+      url: "/auth/login",
+      data: {
+        refreshToken: "invalid_token",
+      },
+    };
+
+    setup.mock.onPost(config.url).reply(401, loginStub);
+
+    setup.clientService.auth
+      .login(config)
+      .catch(function (error) {
+        expect(error.status).toBe(401);
+        expect(error.data).toEqual(loginStub);
+      });
+  });
+
+  it("should handle 401 error for register service", () => {
+    let registerStub: Object = {
+      message: "string",
+      statusCode: 401,
+    };
+
+    let config: AuthorizationServiceConfig = {
+      url: "/users/",
+      data: {
+        name: "Nicolas",
+        email: "nico@gmail.com",
+        password: "1234",
+        avatar: "https://picsum.photos/800",
+      },
+    };
+
+    setup.mock.onPost(config.url).reply(401, registerStub);
+
+    setup.clientService.auth
+      .register(config)
+      .catch(function (error) {
+        expect(error.status).toBe(401);
+        expect(error.data).toEqual(registerStub);
+      });
+  });
+
+  it("should handle 401 error for refresh token service", () => {
+    let resfreshTokenStub: Object = {
+      message: "string",
+      statusCode: 401,
+    };
+
+    let config: AuthorizationServiceConfig = {
+      url: "/auth/refresh-token",
+      data: {
+        refreshToken: "string",
+      },
+    };
+
+    setup.mock.onPost(config.url).reply(401, resfreshTokenStub);
+
+    setup.clientService.auth
+      .refreshToken(config, true)
+      .catch(function (error) {
+        expect(error.status).toBe(401);
+        expect(error.data).toEqual(resfreshTokenStub);
       });
   });
 });
