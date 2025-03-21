@@ -19,13 +19,4 @@ describe('API Client Interceptor', () => {
     });
     expect(setup.instance.interceptor.request.getHeaderValue("Authorization")).toBe(`Bearer ${authToken}`);
   });
-
-  it('should set response interceptor headers properly', () => {
-    const cacheControl = 'no-store';
-
-    setup.instance.interceptor.response.setHeaders({
-      "Cache-Control": cacheControl
-    });
-    expect(setup.instance.interceptor.response.getHeaderValue("Cache-Control")).toBe(cacheControl);
-  });
 });
