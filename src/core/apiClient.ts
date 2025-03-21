@@ -14,7 +14,7 @@ export class APIClient extends APIClientConstructor {
     this.methods = new Methods(this.client);
     this.interceptor = {
       request: new RequestInterceptor(this.client, config?.headers || {}),
-      response: new ResponseInterceptor(this.client, config?.headers || {}),
+      response: new ResponseInterceptor(this.client),
     };
   }
 }
