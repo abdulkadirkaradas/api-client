@@ -44,6 +44,7 @@ export class RequestInterceptor extends InterceptorConstructor {
         for (const header in this.headers) {
           request.headers[header] = this.headers[header];
         }
+        request.withCredentials = true;
         return request;
       },
       (error) => Promise.reject(error)
