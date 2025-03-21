@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosResponse, RawAxiosResponseHeaders } from "axios";
+import { AxiosError, AxiosInstance, AxiosResponse, RawAxiosResponseHeaders } from "axios";
 import { InterceptorConstructor } from "./interceptorConstructor";
 import { CommonResponseHeadersList } from "../interfaces/test";
 import { handleAPIError } from "../utils/error/errorHandler";
@@ -13,8 +13,8 @@ export class ResponseInterceptor extends InterceptorConstructor {
   private registerInterceptor() {
     this.client.interceptors.response.use(
       (response) => response,
-      (error) => {
-        handleAPIError(error);
+      (error: AxiosError) => {
+        return handleAPIError(error);
       }
     );
   }
