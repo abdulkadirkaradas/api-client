@@ -43,7 +43,7 @@ export class AuthorizationService {
    *
    * @param config
    */
-  public setTokenConfig(config: AuthorizationTokenConfig) {
+  public setTokenConfig(config: AuthorizationTokenConfig): void {
     this.tokenConfig = config;
     this.createStorage(config);
   }
@@ -58,7 +58,7 @@ export class AuthorizationService {
    *
    * @param config
    */
-  private createStorage(config: AuthorizationTokenConfig) {
+  protected createStorage(config: AuthorizationTokenConfig): void {
     const storageTypes: StorageType[] = [
       "localStorage",
       "sessionStorage",
@@ -91,7 +91,7 @@ export class AuthorizationService {
    *
    * @param tokenType
    */
-  private getStorage(tokenType: AuthorizationTokenType) {
+  protected getStorage(tokenType: AuthorizationTokenType): IStorage | any {
     return tokenType === "accessToken"
       ? this.tokenStorage.accessToken
       : this.tokenStorage.refreshToken;
@@ -104,7 +104,7 @@ export class AuthorizationService {
    * @param token
    * @param tokenType
    */
-  private setToken(token: string, tokenType: AuthorizationTokenType) {
+  protected setToken(token: string, tokenType: AuthorizationTokenType): void {
     const storage = this.getStorage(tokenType);
     const tokenName =
       tokenType === "refreshToken"
@@ -125,7 +125,7 @@ export class AuthorizationService {
    * @param config
    * @param tokenType
    */
-  private removeToken(tokenType: AuthorizationTokenType) {
+  protected removeToken(tokenType: AuthorizationTokenType): void {
     const storage = this.getStorage(tokenType);
     const tokenName =
       tokenType === "accessToken"
@@ -148,10 +148,10 @@ export class AuthorizationService {
    * @param config
    * @param tokenType
    */
-  private handleTokenResponse(
+  protected handleTokenResponse(
     response: AxiosResponse,
     tokenType: AuthorizationTokenType
-  ) {
+  ): void {
     const tokenName =
       tokenType === "accessToken"
         ? this.requestToken?.accessTokenName
@@ -167,7 +167,9 @@ export class AuthorizationService {
    *
    * @param config
    */
-  public async login(config: AuthorizationServiceConfig) {
+  public async login(
+    config: AuthorizationServiceConfig
+  ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
       config.data,
@@ -195,7 +197,9 @@ export class AuthorizationService {
    *
    * @param config
    */
-  public async register(config: AuthorizationServiceConfig) {
+  public async register(
+    config: AuthorizationServiceConfig
+  ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
       config.data,
@@ -217,7 +221,9 @@ export class AuthorizationService {
    *
    * @param config
    */
-  public async logout(config: AuthorizationServiceConfig) {
+  public async logout(
+    config: AuthorizationServiceConfig
+  ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
       config.data,
@@ -249,7 +255,7 @@ export class AuthorizationService {
   public async refreshToken(
     config: AuthorizationServiceConfig,
     refreshTokenExists = false
-  ) {
+  ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
       config.data,
