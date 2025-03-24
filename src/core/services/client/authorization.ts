@@ -7,6 +7,8 @@ import {
 import { Methods } from "../../../methods/methods";
 import { IStorage, StorageType } from "../../../interfaces/storage";
 import { ClientStorageFactory } from "../../../utils/storage/client/storageFactory";
+import { EventBus } from "../../../utils/eventBus/EventBus";
+import { IServiceConstructor } from "../../../interfaces/service";
 
 /**
  * AuthService class mainly configures the default methods for the authentication service.
@@ -17,6 +19,7 @@ export class AuthorizationService {
   readonly accessTokenName: string = "accessToken";
   readonly refreshTokenName: string = "refreshToken";
 
+  private eventBus: EventBus;
   private tokenConfig: AuthorizationTokenConfig;
   private methods: Methods;
   private storageFactory: ClientStorageFactory;
@@ -25,17 +28,19 @@ export class AuthorizationService {
   private requestToken: AuthorizationTokenConfig["requestTokenConfig"];
   private statusCodes: Array<Number> = [200, 201];
 
-  constructor(client: AxiosInstance, tokenConfig: AuthorizationTokenConfig) {
-    this.tokenConfig = tokenConfig;
+  constructor(config: IServiceConstructor) {
+    this.tokenConfig = config.tokenConfig || {};
+    this.eventBus = config.eventBus;
 
-    this.methods = new Methods(client);
+    this.methods = new Methods(config.client);
     this.storageFactory = new ClientStorageFactory();
     this.requestToken = {
-      accessTokenName: tokenConfig.requestTokenConfig?.accessTokenName,
-      refreshTokenName: tokenConfig.requestTokenConfig?.refreshTokenName,
+      accessTokenName: config.tokenConfig?.requestTokenConfig?.accessTokenName,
+      refreshTokenName:
+        config.tokenConfig?.requestTokenConfig?.refreshTokenName,
     };
 
-    this.createStorage(tokenConfig);
+    this.createStorage(config.tokenConfig || {});
   }
 
   /**
@@ -184,9 +189,16 @@ export class AuthorizationService {
       this.requestToken?.accessTokenName ||
       this.requestToken?.refreshTokenName
     ) {
-      [this.accessTokenName, this.refreshTokenName].forEach((tokenType) =>
-        this.handleTokenResponse(response, tokenType as AuthorizationTokenType)
-      );
+      [this.accessTokenName, this.refreshTokenName].forEach((type) => {
+        this.handleTokenResponse(response, type as AuthorizationTokenType);
+      });
+
+      if (this.requestToken.accessTokenName) {
+        this.eventBus.emit("auth-client-login:sent", "auth", {
+          sent: true,
+          storage: this.getStorage("accessToken"),
+        });
+      }
     }
 
     return response;
