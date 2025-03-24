@@ -1,7 +1,7 @@
-import { AuthorizationService as WebAuthorizationService } from '../client/authorization';
-import { ClientStorageService } from './storageService';
-import { IServiceConstructor } from '../../../interfaces/service';
-import { IStorage, StorageType } from '../../../interfaces/storage';
+import { AuthorizationService as WebAuthorizationService } from "../client/authorization";
+import { ClientStorageService } from "./storageService";
+import { IServiceConstructor } from "../../../interfaces/service";
+import { IStorage, StorageType } from "../../../interfaces/storage";
 export class ClientServices {
   public auth: WebAuthorizationService;
   private storageService: ClientStorageService;
@@ -11,10 +11,11 @@ export class ClientServices {
 
   constructor(config: IServiceConstructor) {
     this.storageService = new ClientStorageService();
-    this.auth = new WebAuthorizationService(
-      config?.client,
-      config?.tokenConfig || {}
-    );
+    this.auth = new WebAuthorizationService({
+      client: config.client,
+      eventBus: config.eventBus,
+      tokenConfig: config?.tokenConfig || {},
+    });
   }
 
   /**
