@@ -1,4 +1,4 @@
-import { StorageType } from "../../../interfaces/storage";
+import { IStorage, StorageType } from "../../../interfaces/storage";
 import { ClientStorageFactory } from "../../../utils/storage/client/storageFactory";
 
 export class ClientStorageService {
@@ -13,7 +13,7 @@ export class ClientStorageService {
    * @param type 
    * @returns 
    */
-  public createStorage(type: StorageType) {
+  public createStorage(type: StorageType): IStorage | any {
     if (typeof window !== undefined) {
       return this.storageFactory.createStorage(type);
     }
