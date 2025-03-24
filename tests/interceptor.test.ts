@@ -14,9 +14,9 @@ describe('API Client Interceptor', () => {
   it('should set request interceptor headers properly', () => {
     const authToken = 'auth_token';
 
-    setup.instance.interceptor.request.setHeaders({
+    setup.instance.interceptorService.request.setHeaders({
       "Authorization": `Bearer ${authToken}`
     });
-    expect(setup.instance.interceptor.request.getHeaderValue("Authorization")).toBe(`Bearer ${authToken}`);
+    expect(setup.instance.interceptorService.request.getHeaderValue("Authorization")).toBe(`Bearer ${authToken}`);
   });
 });
