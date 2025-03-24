@@ -1,20 +1,21 @@
-import { RequestInterceptor } from "../interceptors/requestInterceptor";
-import { ResponseInterceptor } from "../interceptors/responseInterceptors";
+import { InterceptorService } from "./services/interceptorService";
 import { APIClientConfig } from "../interfaces/core";
 import { Methods } from "../methods/methods";
 import { APIClientConstructor } from "./apiClientConstructor";
 
 export class APIClient extends APIClientConstructor {
   public methods: Methods;
-  public interceptor: { request: RequestInterceptor, response: ResponseInterceptor };
+  public interceptorService: InterceptorService;
 
   constructor(config: APIClientConfig) {
     super(config);
 
     this.methods = new Methods(this.client);
-    this.interceptor = {
-      request: new RequestInterceptor(this.client, config?.headers || {}),
-      response: new ResponseInterceptor(this.client),
-    };
+
+    this.interceptorService = new InterceptorService({
+      client: this.client,
+      headers: config.headers || {},
+      eventBus: this.getEventBusInstance()
+    });
   }
 }
