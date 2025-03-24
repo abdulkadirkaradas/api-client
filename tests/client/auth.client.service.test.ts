@@ -159,12 +159,10 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, loginStub);
 
-    setup.clientService.auth
-      .login(config)
-      .catch(function (error) {
-        expect(error.status).toBe(401);
-        expect(error.data).toEqual(loginStub);
-      });
+    setup.clientService.auth.login(config).catch(function (error) {
+      expect(error.status).toBe(401);
+      expect(error.data).toEqual(loginStub);
+    });
   });
 
   it("should handle 401 error for register service", () => {
@@ -185,12 +183,10 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, registerStub);
 
-    setup.clientService.auth
-      .register(config)
-      .catch(function (error) {
-        expect(error.status).toBe(401);
-        expect(error.data).toEqual(registerStub);
-      });
+    setup.clientService.auth.register(config).catch(function (error) {
+      expect(error.status).toBe(401);
+      expect(error.data).toEqual(registerStub);
+    });
   });
 
   it("should handle 401 error for refresh token service", () => {
@@ -208,11 +204,9 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, resfreshTokenStub);
 
-    setup.clientService.auth
-      .refreshToken(config, true)
-      .catch(function (error) {
-        expect(error.status).toBe(401);
-        expect(error.data).toEqual(resfreshTokenStub);
-      });
+    setup.clientService.auth.refreshToken(config, true).catch(function (error) {
+      expect(error.status).toBe(401);
+      expect(error.data).toEqual(resfreshTokenStub);
+    });
   });
 });
