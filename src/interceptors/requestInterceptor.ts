@@ -1,38 +1,54 @@
+import { EventBus } from "../utils/eventBus/EventBus";
+import { InterceptorConstructor } from "./interceptorConstructor";
+import { IStorage } from "../interfaces/storage";
 import {
-  AxiosInstance,
+  AxiosHeaders,
   InternalAxiosRequestConfig,
   RawAxiosRequestHeaders,
 } from "axios";
-import { InterceptorConstructor } from "./interceptorConstructor";
-import { CommonRequestHeadersList } from "../interfaces/test";
+import {
+  CommonRequestHeadersList,
+  IInterceptorConfig,
+} from "../interfaces/interceptors";
 
 export class RequestInterceptor extends InterceptorConstructor {
-  protected headers: RawAxiosRequestHeaders = {};
+  private headers: RawAxiosRequestHeaders;
+  private eventBus: EventBus;
 
-  constructor(client: AxiosInstance, headers: RawAxiosRequestHeaders) {
-    super(client);
+  private readonly accessTokenName: string = "accessToken";
 
-    this.headers = headers;
+  constructor(config: IInterceptorConfig) {
+    super(config.client);
+    this.headers = config.headers;
+    this.eventBus = config.eventBus;
+
+    this.initEventBusListeners();
     this.registerInterceptor();
   }
 
   /**
    * Updates the headers to be added to the request
    *
-   * @param headers {RawAxiosRequestHeaders} - The new headers to be added to the request
+   * @param headers
    */
   public setHeaders(headers: RawAxiosRequestHeaders) {
-    this.headers = headers;
+    this.headers = { ...this.headers, ...headers };
   }
 
   /**
-   * Returns the value of the header
-   * 
-   * @param header 
-   * @returns 
+   * Returns the specified header value
+   *
+   * @param header
    */
   public getHeaderValue(header: CommonRequestHeadersList) {
     return this.headers[header];
+  }
+
+  /**
+   * Returns the all exists headers
+   */
+  public getAllHeaders(): RawAxiosRequestHeaders {
+    return this.headers;
   }
 
   /**
@@ -41,13 +57,32 @@ export class RequestInterceptor extends InterceptorConstructor {
   private registerInterceptor() {
     this.client.interceptors.request.use(
       (request: InternalAxiosRequestConfig) => {
-        for (const header in this.headers) {
-          request.headers[header] = this.headers[header];
+        if (this.headers) {
+          request.headers = AxiosHeaders.from({
+            ...request.headers,
+            ...this.headers,
+          });
         }
-        request.withCredentials = true;
+
         return request;
       },
       (error) => Promise.reject(error)
+    );
+  }
+
+  private initEventBusListeners() {
+    this.eventBus.subscribe(
+      "auth-client-login:sent",
+      "auth",
+      ({ sent, storage }: { sent: boolean; storage: IStorage }) => {
+        let accessToken = storage.get(this.accessTokenName);
+
+        if (sent && accessToken) {
+          this.setHeaders({
+            Authorization: `Bearer ${accessToken}`,
+          });
+        }
+      }
     );
   }
 }
