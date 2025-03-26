@@ -19,7 +19,7 @@ export class RequestInterceptor extends InterceptorConstructor {
 
   constructor(config: IInterceptorConfig) {
     super(config.client);
-    this.headers = config.headers;
+    this.headers = config.headers || {};
     this.eventBus = config.eventBus;
 
     this.initEventBusListeners();
