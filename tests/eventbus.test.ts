@@ -43,19 +43,14 @@ describe("API Client EventBus", () => {
       },
     };
 
-    // Set mock API response for login
     setup.mock.onPost(config.url).reply(200, loginStub);
 
-    // Perform login request
     await setup.clientService.auth.login(config);
 
-    // Mock a GET request and verify Authorization header
     setup.mock.onGet("/categories/").reply(200, {});
 
-    // Perform the GET request
     const response = await setup.instance.methods.get("/categories/");
 
-    // Check if Authorization header is set correctly
     expect(response.config.headers.Authorization).toBe(
       `Bearer ${loginStub.access_token}`
     );
@@ -117,7 +112,6 @@ describe("API Client EventBus", () => {
   }
 
   it("should retry on 500 error and succeed on second attempt", async () => {
-    // İlk iki istekte 500 hatası döndür, üçüncüde 200 başarılı yanıt ver
     setup.mock
       .onGet("/retry-test")
       .replyOnce(500)
@@ -128,15 +122,12 @@ describe("API Client EventBus", () => {
       .onGet("/retry-test")
       .reply(200, { success: true });
 
-    // API çağrısını başlat
     const response = await setup.instance.methods.get("/retry-test");
 
-    // Beklenen sonuç: İlk iki deneme başarısız, üçüncü denemede başarılı
     expect(response.data).toEqual({ success: true });
   });
 
   it("should throw error after max retries on 500 error", async () => {
-    // 500 hatası döndürmeye devam et (maksimum deneme sayısını aşsın)
     setup.mock.onGet("/retry-fail").reply(500);
 
     try {
