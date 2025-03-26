@@ -5,8 +5,8 @@ import { IStorage, StorageType } from "../../../interfaces/storage";
 export class ClientServices {
   public auth: WebAuthorizationService;
   private storageService: ClientStorageService;
-  private storages: Record<string, IStorage> = {};
-  private storageTypes?: Record<string, StorageType> = {};
+  private storages: { [key: string]: IStorage } = {};
+  private storageTypes: { [key: string]: StorageType } = {};
   private readonly defaultStorageType: StorageType = "localStorage";
 
   constructor(config: IServiceConstructor) {
@@ -24,12 +24,16 @@ export class ClientServices {
    * @param type {StorageType}
    * @returns
    */
-  public getStorage(type: StorageType) {
-    if (!this.storageTypes || Object.keys(this.storageTypes).length === 0) {
+  public getStorage(key: string): IStorage {
+    if (
+      !this.storageTypes ||
+      !this.storages[key] ||
+      Object.keys(this.storageTypes).length === 0
+    ) {
       throw new Error("Storage is not set");
     }
 
-    return this.storages[type];
+    return this.storages[key] as IStorage;
   }
 
   /**
@@ -37,8 +41,8 @@ export class ClientServices {
    *
    * @param storages {Record<string, StorageType>}
    */
-  public setStorageType(storages: Record<string, StorageType>) {
-    this.storageTypes = storages;
+  public setStorageType(storages: { [key: string]: StorageType }) {
+    this.storageTypes = { ...(this.storageTypes), ...storages };
 
     this.setStorage();
   }
@@ -47,20 +51,28 @@ export class ClientServices {
    * Creates a new storage/s based on the specified type/s
    */
   private setStorage() {
-    for (const type in this.storageTypes) {
+    const setStorage = (storage: { [key: string]: IStorage }) => {
+      this.storages = {...this.storages, ...storage};
+    };
+
+    for (const key in this.storageTypes) {
+      let value = this.storageTypes[key];
+
       const storage = this.storageService.createStorage(
-        this.storageTypes[type] || this.defaultStorageType
+        value || this.defaultStorageType
       );
 
-      if (this.storages[type] !== undefined) {
-        delete this.storages[type];
+      if (this.storages[key] !== undefined) {
+        delete this.storages[key];
       }
 
       if (!storage) {
-        throw new Error(`Failed to get storage service for type: ${type}`);
+        throw new Error(`Failed to get storage service for type: ${value}`);
       }
 
-      this.storages[type] = storage;
+      setStorage({
+        [key]: storage as IStorage
+      });
     }
   }
 }
