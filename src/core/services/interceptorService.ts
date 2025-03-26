@@ -13,6 +13,9 @@ export class InterceptorService {
       headers: config.headers,
     });
 
-    this.response = new ResponseInterceptor(config.client);
+    this.response = new ResponseInterceptor({
+      client: config.client,
+      eventBus: config.eventBus
+    });
   }
 }
