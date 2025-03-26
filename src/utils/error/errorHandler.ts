@@ -1,21 +1,5 @@
 import { AxiosError } from "axios";
 
-const HTTP_STATUS_CODES = {
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  INTERNAL_SERVER_ERROR: 500,
-};
-
-const ERROR_MESSAGES: Record<number, string> = {
-  [HTTP_STATUS_CODES.BAD_REQUEST]: "Invalid request (Bad Request)",
-  [HTTP_STATUS_CODES.UNAUTHORIZED]: "Unauthorized access. Please log in.",
-  [HTTP_STATUS_CODES.FORBIDDEN]: "Forbidden operation",
-  [HTTP_STATUS_CODES.NOT_FOUND]: "Resource not found",
-  [HTTP_STATUS_CODES.INTERNAL_SERVER_ERROR]: "Internal server error",
-};
-
 export class ErrorHandler extends Error {
   public status: number;
   public data: any;
@@ -28,7 +12,13 @@ export class ErrorHandler extends Error {
 }
 
 export function handleAPIError(error: AxiosError): ErrorHandler {
-  // Promise.reject(error);
+  const ERROR_MESSAGES: Record<number, string> = {
+    400: "Invalid request (Bad Request)",
+    401: "Unauthorized access. Please log in.",
+    403: "Forbidden operation",
+    404: "Resource not found",
+    500: "Internal server error",
+  };
 
   if (error.response) {
     const { status, data } = error.response;
