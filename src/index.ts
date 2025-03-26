@@ -3,7 +3,6 @@ import { ClientServices } from "./core/services/client/clientService";
 import { APIClientConfig } from "./interfaces/core";
 import { ClientStorageFactory } from "./utils/storage/client/storageFactory";
 import { MethodGenerator as Generator } from './methods/generator';
-import { EventBus } from "./utils/eventBus/EventBus";
 
 export const createAPIClient = (config: APIClientConfig) => {
   const ApiClient = new APIClient(config);
