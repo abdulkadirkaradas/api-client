@@ -20,16 +20,15 @@ export class AuthorizationService {
   readonly refreshTokenName: string = "refreshToken";
 
   private eventBus: EventBus;
-  private tokenConfig: AuthorizationTokenConfig;
   private methods: Methods;
   private storageFactory: ClientStorageFactory;
+  private tokenConfig: AuthorizationTokenConfig = {};
   private tokenStorage: { accessToken?: IStorage; refreshToken?: IStorage } =
     {};
   private requestToken: AuthorizationTokenConfig["requestTokenConfig"];
   private statusCodes: Array<Number> = [200, 201];
 
   constructor(config: IServiceConstructor) {
-    this.tokenConfig = config.tokenConfig || {};
     this.eventBus = config.eventBus;
 
     this.methods = new Methods(config.client);
@@ -40,7 +39,7 @@ export class AuthorizationService {
         config.tokenConfig?.requestTokenConfig?.refreshTokenName,
     };
 
-    this.createStorage(config.tokenConfig || {});
+    this.setTokenConfig(config.tokenConfig || {});
   }
 
   /**
@@ -51,6 +50,10 @@ export class AuthorizationService {
   public setTokenConfig(config: AuthorizationTokenConfig): void {
     this.tokenConfig = config;
     this.createStorage(config);
+
+    this.eventBus.emit("auth-client-token-config", "auth", {
+      config: config,
+    });
   }
 
   //TODO This method will be removed in full version. For now used for testing purposes.
