@@ -160,8 +160,8 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(401, loginStub);
 
     setup.clientService.auth.login(config).catch(function (error) {
-      expect(error.status).toBe(401);
-      expect(error.data).toEqual(loginStub);
+      expect(error.response.status).toBe(401);
+      expect(error.response.data).toEqual(loginStub);
     });
   });
 
@@ -184,8 +184,8 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(401, registerStub);
 
     setup.clientService.auth.register(config).catch(function (error) {
-      expect(error.status).toBe(401);
-      expect(error.data).toEqual(registerStub);
+      expect(error.response.status).toBe(401);
+      expect(error.response.data).toEqual(registerStub);
     });
   });
 
@@ -205,8 +205,8 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(401, resfreshTokenStub);
 
     setup.clientService.auth.refreshToken(config, true).catch(function (error) {
-      expect(error.status).toBe(401);
-      expect(error.data).toEqual(resfreshTokenStub);
+      expect(error.response.status).toBe(401);
+      expect(error.response.data).toEqual(resfreshTokenStub);
     });
   });
 });
