@@ -16,7 +16,7 @@ export class TestSetup {
 
   constructor() {
     this.config = {
-      baseURL: "https://api.escuelajs.co/api/v1",
+      baseURL: "https://api.example.com",
       headers: {
         "Content-Type": "application/json",
       },
