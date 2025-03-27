@@ -20,12 +20,6 @@ export class TestSetup {
       headers: {
         "Content-Type": "application/json",
       },
-      tokenConfig: {
-        requestTokenConfig: {
-          accessTokenName: "access_token",
-          refreshTokenName: "refresh_token",
-        },
-      },
     };
 
     const create = createAPIClient(this.config);
