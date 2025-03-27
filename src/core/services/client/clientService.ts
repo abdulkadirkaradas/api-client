@@ -44,13 +44,13 @@ export class ClientServices {
   public setStorageType(storages: { [key: string]: StorageType }) {
     this.storageTypes = { ...(this.storageTypes), ...storages };
 
-    this.setStorage();
+    this.createStorage();
   }
 
   /**
    * Creates a new storage/s based on the specified type/s
    */
-  private setStorage() {
+  private createStorage() {
     const setStorage = (storage: { [key: string]: IStorage }) => {
       this.storages = {...this.storages, ...storage};
     };
@@ -62,12 +62,13 @@ export class ClientServices {
         value || this.defaultStorageType
       );
 
-      if (this.storages[key] !== undefined) {
-        delete this.storages[key];
-      }
-
       if (!storage) {
         throw new Error(`Failed to get storage service for type: ${value}`);
+      }
+
+      if (this.storages[key] !== undefined) {
+        delete this.storages[key];
+        delete this.storageTypes[key];
       }
 
       setStorage({
