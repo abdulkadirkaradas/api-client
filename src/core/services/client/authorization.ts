@@ -65,7 +65,6 @@ export class AuthorizationService {
    * @param config
    */
   protected createStorage(config: AuthorizationTokenConfig): void {
-    //TODO Unused or duplicated storages must be removed from variable
     const storageTypes: StorageType[] = [
       "localStorage",
       "sessionStorage",
