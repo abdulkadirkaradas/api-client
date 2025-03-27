@@ -65,6 +65,7 @@ export class AuthorizationService {
    * @param config
    */
   protected createStorage(config: AuthorizationTokenConfig): void {
+    //TODO Unused or duplicated storages must be removed from variable
     const storageTypes: StorageType[] = [
       "localStorage",
       "sessionStorage",
@@ -75,6 +76,10 @@ export class AuthorizationService {
     let refreshTokenType =
       config.tokenStorageType?.refreshToken || "localStorage";
 
+    // Clear existing token storage to prevent duplicate storage creation
+    this.tokenStorage.accessToken = undefined;
+    this.tokenStorage.refreshToken = undefined;
+      
     if (
       config.tokenStorageType?.accessToken &&
       storageTypes.includes(accessTokenType)
@@ -97,7 +102,7 @@ export class AuthorizationService {
    *
    * @param tokenType
    */
-  protected getStorage(tokenType: AuthorizationTokenType): IStorage | any {
+  public getStorage(tokenType: AuthorizationTokenType): IStorage | any {
     return tokenType === "accessToken"
       ? this.tokenStorage.accessToken
       : this.tokenStorage.refreshToken;
