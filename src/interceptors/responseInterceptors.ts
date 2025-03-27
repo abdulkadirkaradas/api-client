@@ -68,7 +68,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
             const accessToken =
               response.data[
                 this.tokenRefreshConfig.config?.requestTokenConfig
-                  ?.refreshTokenName || ""
+                  ?.accessTokenName || ""
               ];
 
             if (!accessToken) {
@@ -134,13 +134,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
       throw new Error("Refresh token storage configuration is missing");
     }
 
-    const storageType = config.tokenStorageType?.refreshToken || "localStorage";
-
-    this.clientService.setStorageType({
-      rtStorage: storageType,
-    });
-
-    const rtStorage: IStorage = this.clientService.getStorage("rtStorage");
+    const rtStorage = this.clientService.auth.getStorage("refreshToken");
 
     if (!rtStorage) {
       throw new Error("Storage could not be created.");
@@ -160,7 +154,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
       const response = await this.clientService.auth.refreshToken({
         url: this.tokenRefreshConfig.url || "",
         data: { refreshToken: refreshToken },
-      });
+      }, true);
 
       return response;
     } catch (error) {
