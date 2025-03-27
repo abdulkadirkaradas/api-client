@@ -25,19 +25,12 @@ export class AuthorizationService {
   private tokenConfig: AuthorizationTokenConfig = {};
   private tokenStorage: { accessToken?: IStorage; refreshToken?: IStorage } =
     {};
-  private requestToken: AuthorizationTokenConfig["requestTokenConfig"];
   private statusCodes: Array<Number> = [200, 201];
 
   constructor(config: IServiceConstructor) {
     this.eventBus = config.eventBus;
-
     this.methods = new Methods(config.client);
     this.storageFactory = new ClientStorageFactory();
-    this.requestToken = {
-      accessTokenName: config.tokenConfig?.requestTokenConfig?.accessTokenName,
-      refreshTokenName:
-        config.tokenConfig?.requestTokenConfig?.refreshTokenName,
-    };
 
     this.setTokenConfig(config.tokenConfig || {});
   }
@@ -48,12 +41,14 @@ export class AuthorizationService {
    * @param config
    */
   public setTokenConfig(config: AuthorizationTokenConfig): void {
-    this.tokenConfig = config;
-    this.createStorage(config);
+    this.tokenConfig = { ...this.tokenConfig, ...config };
+    this.createStorage(this.tokenConfig);
 
-    this.eventBus.emit("auth-client-token-config", "auth", {
-      config: config,
-    });
+    if (Object.keys(this.tokenConfig).length !== 0) {
+      this.eventBus.emit("auth-client-token-config", "auth", {
+        config: this.tokenConfig,
+      });
+    }
   }
 
   //TODO This method will be removed in full version. For now used for testing purposes.
@@ -162,8 +157,8 @@ export class AuthorizationService {
   ): void {
     const tokenName =
       tokenType === "accessToken"
-        ? this.requestToken?.accessTokenName
-        : this.requestToken?.refreshTokenName;
+        ? this.tokenConfig.requestTokenConfig?.accessTokenName
+        : this.tokenConfig.requestTokenConfig?.refreshTokenName;
     const token = response.data[tokenName || ""];
     if (token) {
       this.setToken(token, tokenType);
@@ -189,14 +184,14 @@ export class AuthorizationService {
     }
 
     if (
-      this.requestToken?.accessTokenName ||
-      this.requestToken?.refreshTokenName
+      this.tokenConfig.requestTokenConfig?.accessTokenName ||
+      this.tokenConfig.requestTokenConfig?.refreshTokenName
     ) {
       [this.accessTokenName, this.refreshTokenName].forEach((type) => {
         this.handleTokenResponse(response, type as AuthorizationTokenType);
       });
 
-      if (this.requestToken.accessTokenName) {
+      if (this.tokenConfig.requestTokenConfig.accessTokenName) {
         this.eventBus.emit("auth-client-login:sent", "auth", {
           sent: true,
           storage: this.getStorage("accessToken"),
