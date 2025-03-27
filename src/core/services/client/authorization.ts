@@ -41,12 +41,13 @@ export class AuthorizationService {
    * @param config
    */
   public setTokenConfig(config: AuthorizationTokenConfig): void {
-    const isConfigChanged = JSON.stringify(this.tokenConfig) !== JSON.stringify(config);
+    const isConfigChanged =
+      JSON.stringify(this.tokenConfig) !== JSON.stringify(config);
 
     if (isConfigChanged) {
       this.tokenConfig = { ...this.tokenConfig, ...config };
       this.createStorage(this.tokenConfig);
-  
+
       this.eventBus.emit("auth-client-token-config", "auth", {
         config:
           Object.keys(this.tokenConfig).length !== 0 ? this.tokenConfig : {},
@@ -69,6 +70,7 @@ export class AuthorizationService {
       "localStorage",
       "sessionStorage",
       "cookie",
+      "json",
     ];
     let accessTokenType =
       config.tokenStorageType?.accessToken || "localStorage";
@@ -78,7 +80,7 @@ export class AuthorizationService {
     // Clear existing token storage to prevent duplicate storage creation
     this.tokenStorage.accessToken = undefined;
     this.tokenStorage.refreshToken = undefined;
-      
+
     if (
       config.tokenStorageType?.accessToken &&
       storageTypes.includes(accessTokenType)
@@ -117,7 +119,7 @@ export class AuthorizationService {
   protected setToken(token: string, tokenType: AuthorizationTokenType): void {
     const storage = this.getStorage(tokenType);
     const tokenName =
-      tokenType === "refreshToken"
+      tokenType === "accessToken"
         ? this.accessTokenName
         : this.refreshTokenName;
 
