@@ -31,7 +31,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
     this.eventBus = config.eventBus;
     this.clientService = new ClientServices({
       client: this.client,
-      eventBus: this.eventBus
+      eventBus: this.eventBus,
     });
 
     this.initEventBusListeners();
@@ -65,10 +65,16 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
           try {
             const response = await this.refreshToken();
-            const accessToken = response.data[this.tokenRefreshConfig.config?.requestTokenConfig?.refreshTokenName || ""];
+            const accessToken =
+              response.data[
+                this.tokenRefreshConfig.config?.requestTokenConfig
+                  ?.refreshTokenName || ""
+              ];
 
             if (!accessToken) {
-              throw new Error("Access token is missing in the refresh token response.");
+              throw new Error(
+                "Access token is missing in the refresh token response."
+              );
             }
 
             config.headers = new AxiosHeaders({
@@ -78,7 +84,6 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
             console.warn("Access token refreshed successfully!");
             return this.client(config);
-
           } catch (refreshError) {
             console.error("Token refresh failed. Redirected to login...");
             this.tokenRefreshConfig.storage?.remove("refreshToken");
@@ -104,7 +109,9 @@ export class ResponseInterceptor extends InterceptorConstructor {
             config.retryCount++;
 
             const delay = (config.retryCount + 1) * 1000;
-            console.warn(`Retrying request (${config.retryCount}/${maxRetries}) in ${delay}ms...`);
+            console.warn(
+              `Retrying request (${config.retryCount}/${maxRetries}) in ${delay}ms...`
+            );
 
             await new Promise((resolve) => setTimeout(resolve, delay));
             return this.client(config);
@@ -118,7 +125,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
   private async refreshToken() {
     const { config } = this.tokenRefreshConfig;
-    
+
     if (!config) {
       throw new Error("Refresh token configuration is missing.");
     }
@@ -140,7 +147,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
     }
 
     this.setTokenRefreshConfig({
-      storage: rtStorage
+      storage: rtStorage,
     });
 
     const refreshToken = rtStorage?.get("refreshToken");
@@ -153,7 +160,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
       const response = await this.clientService.auth.refreshToken({
         url: this.tokenRefreshConfig.url || "",
         data: { refreshToken: refreshToken },
-      }); 
+      });
 
       return response;
     } catch (error) {
