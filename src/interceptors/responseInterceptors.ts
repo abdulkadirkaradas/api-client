@@ -12,6 +12,7 @@ import {
 
 export class ResponseInterceptor extends InterceptorConstructor {
   private eventBus: EventBus;
+  private clientService: ClientServices;
   private tokenRefreshConfig: TokenRefreshConfig = {};
   private httpStatusCodes = {
     badRequest: 400,
@@ -28,6 +29,10 @@ export class ResponseInterceptor extends InterceptorConstructor {
   constructor(config: IInterceptorConfig) {
     super(config.client);
     this.eventBus = config.eventBus;
+    this.clientService = new ClientServices({
+      client: this.client,
+      eventBus: this.eventBus
+    });
 
     this.initEventBusListeners();
     this.registerInterceptor();
@@ -35,6 +40,13 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
   public setTokenRefreshConfig(config: TokenRefreshConfig) {
     this.tokenRefreshConfig = { ...this.tokenRefreshConfig, ...config };
+  }
+
+  private setClientAuthServiceConfig(config: AuthorizationTokenConfig) {
+    this.clientService.auth.setTokenConfig(config);
+    this.setTokenRefreshConfig({
+      config: config,
+    });
   }
 
   private registerInterceptor() {
@@ -116,16 +128,12 @@ export class ResponseInterceptor extends InterceptorConstructor {
     }
 
     const storageType = config.tokenStorageType?.refreshToken || "localStorage";
-    const clientService = new ClientServices({
-      client: this.client,
-      eventBus: this.eventBus,
-      tokenConfig: config,
-    });
-    clientService.setStorageType({
+
+    this.clientService.setStorageType({
       rtStorage: storageType,
     });
 
-    const rtStorage: IStorage = clientService.getStorage("rtStorage");
+    const rtStorage: IStorage = this.clientService.getStorage("rtStorage");
 
     if (!rtStorage) {
       throw new Error("Storage could not be created.");
@@ -142,7 +150,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
     }
 
     try {
-      const response = await clientService.auth.refreshToken({
+      const response = await this.clientService.auth.refreshToken({
         url: this.tokenRefreshConfig.url || "",
         data: { refreshToken: refreshToken },
       }); 
@@ -159,9 +167,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
       "auth-client-token-config",
       "auth",
       ({ config }: { config: AuthorizationTokenConfig }) => {
-        this.setTokenRefreshConfig({
-          config: config,
-        });
+        this.setClientAuthServiceConfig(config);
       }
     );
   }
