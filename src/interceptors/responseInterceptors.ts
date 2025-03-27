@@ -1,10 +1,9 @@
-import { AuthorizationTokenConfig } from '../interfaces/auth';
-import { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from 'axios';
-import { ClientServices } from '../core/services/client/clientService';
-import { EventBus } from '../utils/eventBus/EventBus';
-import { handleAPIError } from '../utils/error/errorHandler';
-import { InterceptorConstructor } from './interceptorConstructor';
-import { IStorage } from '../interfaces/storage';
+import { AuthorizationTokenConfig } from "../interfaces/auth";
+import { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
+import { ClientServices } from "../core/services/client/clientService";
+import { EventBus } from "../utils/eventBus/EventBus";
+import { handleAPIError } from "../utils/error/errorHandler";
+import { InterceptorConstructor } from "./interceptorConstructor";
 import {
   IInterceptorConfig,
   TokenRefreshConfig,
@@ -126,39 +125,47 @@ export class ResponseInterceptor extends InterceptorConstructor {
   private async refreshToken() {
     const { config } = this.tokenRefreshConfig;
 
-    if (!config) {
-      throw new Error("Refresh token configuration is missing.");
+    if (!config?.tokenStorageType) {
+      throw new Error(
+        "Token configuration or storage type is missing. At least one of configuration must be provided!"
+      );
     }
 
-    if (!config.tokenStorageType) {
-      throw new Error("Refresh token storage configuration is missing");
+    const atStorage = config.tokenStorageType.accessToken
+      ? this.clientService.auth.getStorage("accessToken")
+      : null;
+
+    const rtStorage = config.tokenStorageType.refreshToken
+      ? this.clientService.auth.getStorage("refreshToken")
+      : null;
+
+    if (!atStorage && !rtStorage) {
+      throw new Error(
+        "Neither access token nor refresh token storage is available."
+      );
     }
 
-    const rtStorage = this.clientService.auth.getStorage("refreshToken");
+    const tokenData = rtStorage
+      ? { token: rtStorage.get("refreshToken"), type: "refreshToken" }
+      : { token: atStorage?.get("accessToken"), type: "accessToken" };
 
-    if (!rtStorage) {
-      throw new Error("Storage could not be created.");
-    }
-
-    this.setTokenRefreshConfig({
-      storage: rtStorage,
-    });
-
-    const refreshToken = rtStorage?.get("refreshToken");
-
-    if (!refreshToken) {
-      throw new Error("Refresh token is not available in storage.");
+    if (!tokenData.token) {
+      throw new Error(`${tokenData.type} is not available in storage.`);
     }
 
     try {
-      const response = await this.clientService.auth.refreshToken({
-        url: this.tokenRefreshConfig.url || "",
-        data: { refreshToken: refreshToken },
-      }, true);
-
-      return response;
+      return this.clientService.auth.refreshToken(
+        {
+          url: this.tokenRefreshConfig.url || "",
+          data: { [tokenData.type]: tokenData.token },
+        },
+        tokenData.type === "refreshToken"
+      );
     } catch (error) {
-      console.error("An error occurred: ", error);
+      console.error(
+        `An error occurred during token refresh with ${tokenData.type}:`,
+        error
+      );
       throw error;
     }
   }
