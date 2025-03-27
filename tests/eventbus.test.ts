@@ -60,7 +60,7 @@ describe("API Client EventBus", () => {
 
     setup.mock.onGet(mockUrl).replyOnce(401);
 
-    setup.mock.onPost(config.url).reply(200, { refresh_token: "string" });
+    setup.mock.onPost(config.url).reply(200, { refresh_token: "refresh_token", access_token: "access_token" });
 
     setup.mock.onGet(mockUrl).replyOnce(200, successStub);
 
