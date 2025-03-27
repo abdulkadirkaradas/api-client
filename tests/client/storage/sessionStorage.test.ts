@@ -17,6 +17,10 @@ describe("API Client Storage/SessionStorage servie", () => {
         accessToken: "sessionStorage",
         refreshToken: "sessionStorage",
       },
+      requestTokenConfig: {
+        accessTokenName: "access_token",
+        refreshTokenName: "refresh_token",
+      },
     });
 
     setup.clientService.setStorageType({

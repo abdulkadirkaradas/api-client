@@ -17,6 +17,10 @@ describe("API Client Storage/LocalStorage servie", () => {
         accessToken: "localStorage",
         refreshToken: "localStorage",
       },
+      requestTokenConfig: {
+        accessTokenName: "access_token",
+        refreshTokenName: "refresh_token",
+      },
     });
 
     setup.clientService.setStorageType({
