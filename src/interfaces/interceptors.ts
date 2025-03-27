@@ -17,7 +17,7 @@ export interface IInterceptorConfig {
   headers?: RawAxiosRequestHeaders;
 }
 
-export interface RefreshTokenEventConfig {
+export interface TokenRefreshConfig {
   url?: string;
   config?: AuthorizationTokenConfig;
   storage?: IStorage;
