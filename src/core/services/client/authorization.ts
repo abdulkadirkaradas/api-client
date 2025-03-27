@@ -41,12 +41,15 @@ export class AuthorizationService {
    * @param config
    */
   public setTokenConfig(config: AuthorizationTokenConfig): void {
-    this.tokenConfig = { ...this.tokenConfig, ...config };
-    this.createStorage(this.tokenConfig);
+    const isConfigChanged = JSON.stringify(this.tokenConfig) !== JSON.stringify(config);
 
-    if (Object.keys(this.tokenConfig).length !== 0) {
+    if (isConfigChanged) {
+      this.tokenConfig = { ...this.tokenConfig, ...config };
+      this.createStorage(this.tokenConfig);
+  
       this.eventBus.emit("auth-client-token-config", "auth", {
-        config: this.tokenConfig,
+        config:
+          Object.keys(this.tokenConfig).length !== 0 ? this.tokenConfig : {},
       });
     }
   }
