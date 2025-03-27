@@ -8,16 +8,12 @@ describe("API Client EventBus", () => {
 
   jest.setTimeout(15000);
 
-  beforeEach(() => {
+  beforeEach(async () => {
     setup = new TestSetup();
     localStorage.clear();
     jest.clearAllMocks();
 
     setup.clientService.auth.setTokenConfig({
-      tokenStorageType: {
-        accessToken: "localStorage",
-        refreshToken: "localStorage",
-      },
       requestTokenConfig: {
         accessTokenName: "access_token",
         refreshTokenName: "refresh_token",
@@ -35,17 +31,7 @@ describe("API Client EventBus", () => {
       refresh_token: "string",
     };
 
-    let config: AuthorizationServiceConfig = {
-      url: "/auth/login",
-      data: {
-        email: "usr@mail.com",
-        password: "pwd",
-      },
-    };
-
-    setup.mock.onPost(config.url).reply(200, loginStub);
-
-    await setup.clientService.auth.login(config);
+    await login();
 
     setup.mock.onGet("/categories/").reply(200, {});
 
@@ -57,14 +43,7 @@ describe("API Client EventBus", () => {
   });
 
   it("should refresh token on 401 error and retry request", async () => {
-    let successStub: Object = {
-      id: 1,
-      email: "string",
-      password: "string",
-      name: "string",
-      role: "string",
-      avatar: "string",
-    };
+    let successStub: Object = { success: true };
     let config: AuthorizationServiceConfig = {
       url: "/auth/refresh-token",
       data: {
@@ -73,19 +52,17 @@ describe("API Client EventBus", () => {
     };
     let mockUrl = "/auth/profile";
 
-    setup.mock.onGet(mockUrl).replyOnce(401);
-
-    setup.mock.onPost(config.url).reply(200, {
-      refresh_token: "string",
-    });
-
-    setup.mock.onGet(mockUrl).replyOnce(200, successStub);
-
-    setup.instance.interceptorService.response.setRefreshTokenEventConfig({
+    setup.instance.interceptorService.response.setTokenRefreshConfig({
       url: config.url,
     });
 
     await login();
+
+    setup.mock.onGet(mockUrl).replyOnce(401);
+
+    setup.mock.onPost(config.url).reply(200, { refresh_token: "string" });
+
+    setup.mock.onGet(mockUrl).replyOnce(200, successStub);
 
     const response = await setup.instance.methods.get(mockUrl);
 
@@ -105,6 +82,13 @@ describe("API Client EventBus", () => {
         password: "pwd",
       },
     };
+
+    setup.clientService.auth.setTokenConfig({
+      tokenStorageType: {
+        accessToken: "localStorage",
+        refreshToken: "localStorage",
+      },
+    });
 
     setup.mock.onPost(config.url).reply(200, loginStub);
 
@@ -133,7 +117,6 @@ describe("API Client EventBus", () => {
     try {
       await setup.instance.methods.get("/retry-fail");
     } catch (error: AxiosError | any) {
-      console.error(error);
       expect(error).toBeDefined();
       expect(error.message).toContain("Request failed with status code 500");
     }
