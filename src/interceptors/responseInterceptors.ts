@@ -7,12 +7,12 @@ import { InterceptorConstructor } from './interceptorConstructor';
 import { IStorage } from '../interfaces/storage';
 import {
   IInterceptorConfig,
-  RefreshTokenEventConfig,
+  TokenRefreshConfig,
 } from "../interfaces/interceptors";
 
 export class ResponseInterceptor extends InterceptorConstructor {
   private eventBus: EventBus;
-  private refreshTokenEventConfig: RefreshTokenEventConfig = {};
+  private tokenRefreshConfig: TokenRefreshConfig = {};
   private httpStatusCodes = {
     badRequest: 400,
     unauthorized: 401,
@@ -33,8 +33,8 @@ export class ResponseInterceptor extends InterceptorConstructor {
     this.registerInterceptor();
   }
 
-  public setRefreshTokenEventConfig(args: RefreshTokenEventConfig) {
-    this.refreshTokenEventConfig = { ...this.refreshTokenEventConfig, ...args };
+  public setTokenRefreshConfig(config: TokenRefreshConfig) {
+    this.tokenRefreshConfig = { ...this.tokenRefreshConfig, ...config };
   }
 
   private registerInterceptor() {
@@ -46,14 +46,14 @@ export class ResponseInterceptor extends InterceptorConstructor {
         };
 
         if (
-          this.refreshTokenEventConfig.url &&
+          this.tokenRefreshConfig.url &&
           error.response?.status === this.httpStatusCodes.unauthorized
         ) {
           console.warn("Unauthorized! Trying to refresh token...");
 
           try {
             const response = await this.refreshToken();
-            const accessToken = response.data[this.refreshTokenEventConfig.config?.requestTokenConfig?.refreshTokenName || ""];
+            const accessToken = response.data[this.tokenRefreshConfig.config?.requestTokenConfig?.refreshTokenName || ""];
 
             if (!accessToken) {
               throw new Error("Access token is missing in the refresh token response.");
@@ -69,7 +69,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
           } catch (refreshError) {
             console.error("Token refresh failed. Redirected to login...");
-            this.refreshTokenEventConfig.storage?.remove("refreshToken");
+            this.tokenRefreshConfig.storage?.remove("refreshToken");
             return Promise.reject(refreshError);
           }
         }
@@ -105,9 +105,14 @@ export class ResponseInterceptor extends InterceptorConstructor {
   }
 
   private async refreshToken() {
-    const { config } = this.refreshTokenEventConfig;
+    const { config } = this.tokenRefreshConfig;
+    
     if (!config) {
       throw new Error("Refresh token configuration is missing.");
+    }
+
+    if (!config.tokenStorageType) {
+      throw new Error("Refresh token storage configuration is missing");
     }
 
     const storageType = config.tokenStorageType?.refreshToken || "localStorage";
@@ -119,8 +124,17 @@ export class ResponseInterceptor extends InterceptorConstructor {
     clientService.setStorageType({
       rtStorage: storageType,
     });
+
     const rtStorage: IStorage = clientService.getStorage("rtStorage");
-    
+
+    if (!rtStorage) {
+      throw new Error("Storage could not be created.");
+    }
+
+    this.setTokenRefreshConfig({
+      storage: rtStorage
+    });
+
     const refreshToken = rtStorage?.get("refreshToken");
 
     if (!refreshToken) {
@@ -129,7 +143,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
     try {
       const response = await clientService.auth.refreshToken({
-        url: this.refreshTokenEventConfig.url || "",
+        url: this.tokenRefreshConfig.url || "",
         data: { refreshToken: refreshToken },
       }); 
 
@@ -145,7 +159,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
       "auth-client-token-config",
       "auth",
       ({ config }: { config: AuthorizationTokenConfig }) => {
-        this.setRefreshTokenEventConfig({
+        this.setTokenRefreshConfig({
           config: config,
         });
       }
