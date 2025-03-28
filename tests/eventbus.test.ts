@@ -27,8 +27,8 @@ describe("API Client EventBus", () => {
 
   it("should set Authorization header correctly during a request", async () => {
     let loginStub = {
-      access_token: "string",
-      refresh_token: "string",
+      access_token: "access_token",
+      refresh_token: "access_token",
     };
 
     await login();
