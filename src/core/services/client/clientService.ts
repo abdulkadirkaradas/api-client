@@ -1,12 +1,17 @@
-import { AuthorizationService as WebAuthorizationService } from "../client/authorization";
-import { ClientStorageService } from "./storageService";
-import { IServiceConstructor } from "../../../interfaces/service";
-import { IStorage, StorageType } from "../../../interfaces/storage";
+import { AuthorizationService as WebAuthorizationService } from '../client/authorization';
+import { ClientStorageService } from './storageService';
+import { IServiceConstructor } from '../../../interfaces/service';
+import {
+  IStorage,
+  ServiceStorageCustomConfig,
+  StorageCustomConfig,
+  StorageType,
+} from "../../../interfaces/storage";
 export class ClientServices {
   public auth: WebAuthorizationService;
   private storageService: ClientStorageService;
-  private storages: { [key: string]: IStorage } = {};
-  private storageTypes: { [key: string]: StorageType } = {};
+  private storages: StorageCustomConfig = {};
+  private storageTypes: ServiceStorageCustomConfig = {};
   private readonly defaultStorageType: StorageType = "localStorage";
 
   constructor(config: IServiceConstructor) {
@@ -41,8 +46,8 @@ export class ClientServices {
    *
    * @param storages {Record<string, StorageType>}
    */
-  public setStorageType(storages: { [key: string]: StorageType }) {
-    this.storageTypes = { ...(this.storageTypes), ...storages };
+  public setStorageType(storages: ServiceStorageCustomConfig) {
+    this.storageTypes = { ...this.storageTypes, ...storages };
 
     this.createStorage();
   }
@@ -51,8 +56,8 @@ export class ClientServices {
    * Creates a new storage/s based on the specified type/s
    */
   private createStorage() {
-    const setStorage = (storage: { [key: string]: IStorage }) => {
-      this.storages = {...this.storages, ...storage};
+    const setStorage = (storage: StorageCustomConfig) => {
+      this.storages = { ...this.storages, ...storage };
     };
 
     for (const key in this.storageTypes) {
@@ -72,7 +77,7 @@ export class ClientServices {
       }
 
       setStorage({
-        [key]: storage as IStorage
+        [key]: storage as IStorage,
       });
     }
   }
