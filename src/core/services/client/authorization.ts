@@ -72,30 +72,22 @@ export class AuthorizationService {
       "cookie",
       "json",
     ];
-    let accessTokenType =
-      config.tokenStorageType?.accessToken || "localStorage";
-    let refreshTokenType =
-      config.tokenStorageType?.refreshToken || "localStorage";
 
     // Clear existing token storage to prevent duplicate storage creation
     this.tokenStorage.accessToken = undefined;
     this.tokenStorage.refreshToken = undefined;
 
-    if (
-      config.tokenStorageType?.accessToken &&
-      storageTypes.includes(accessTokenType)
-    ) {
-      this.tokenStorage.accessToken =
-        this.storageFactory.createStorage(accessTokenType);
-    }
+    const createTokenStorage = (
+      type: StorageType | null,
+      tokenName: "accessToken" | "refreshToken"
+    ) => {
+      if (type && storageTypes.includes(type)) {
+        this.tokenStorage[tokenName] = this.storageFactory.createStorage(type);
+      }
+    };
 
-    if (
-      config.tokenStorageType?.refreshToken &&
-      storageTypes.includes(refreshTokenType)
-    ) {
-      this.tokenStorage.refreshToken =
-        this.storageFactory.createStorage(refreshTokenType);
-    }
+    createTokenStorage(config.tokenStorageType?.accessToken || "localStorage", "accessToken");
+    createTokenStorage(config.tokenStorageType?.refreshToken || "localStorage", "refreshToken");
   }
 
   /**
