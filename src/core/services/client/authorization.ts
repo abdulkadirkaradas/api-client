@@ -163,6 +163,8 @@ export class AuthorizationService {
     const token = response.data[tokenName || ""];
     if (token) {
       this.setToken(token, tokenType);
+    } else {
+      throw new Error(`${tokenName} token not found in response.data bag.`);
     }
   }
 
