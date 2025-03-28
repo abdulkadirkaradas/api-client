@@ -55,8 +55,10 @@ export class AuthorizationService {
     }
   }
 
-  //TODO This method will be removed in full version. For now used for testing purposes.
-  public getTokenConfig() {
+  /**
+   * Returns the existing token configuration
+   */
+  public getTokenConfig(): AuthorizationTokenConfig {
     return this.tokenConfig;
   }
 
