@@ -128,7 +128,7 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(200, resfreshTokenStub);
 
     setup.clientService.auth
-      .refreshToken(config, true)
+      .refreshToken(config)
       .then(function (result) {
         expect(storage?.get("accessToken")).toBe(result.data.access_token);
         expect(storage?.get("refreshToken")).toBe(result.data.refresh_token);
@@ -195,7 +195,7 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, resfreshTokenStub);
 
-    setup.clientService.auth.refreshToken(config, true).catch(function (error) {
+    setup.clientService.auth.refreshToken(config).catch(function (error) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(resfreshTokenStub);
     });

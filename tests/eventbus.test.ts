@@ -1,6 +1,9 @@
 import "jest-localstorage-mock";
 import { TestSetup } from "./utils/testSetup";
-import { AuthorizationServiceConfig } from "../src/interfaces/auth";
+import {
+  AuthorizationServiceConfig,
+  AuthorizationTokenConfig,
+} from "../src/interfaces/auth";
 import { AxiosError } from "axios";
 
 describe("API Client EventBus", () => {
@@ -12,13 +15,6 @@ describe("API Client EventBus", () => {
     setup = new TestSetup();
     localStorage.clear();
     jest.clearAllMocks();
-
-    setup.clientService.auth.setTokenConfig({
-      requestTokenConfig: {
-        accessTokenName: "access_token",
-        refreshTokenName: "refresh_token",
-      },
-    });
   });
 
   afterEach(() => {
@@ -31,7 +27,16 @@ describe("API Client EventBus", () => {
       refresh_token: "access_token",
     };
 
-    await login();
+    await login({
+      tokenStorageType: {
+        accessToken: "localStorage",
+        refreshToken: "localStorage",
+      },
+      requestTokenConfig: {
+        accessTokenName: "access_token",
+        refreshTokenName: "refresh_token",
+      },
+    });
 
     setup.mock.onGet("/categories/").reply(200, {});
 
@@ -56,11 +61,25 @@ describe("API Client EventBus", () => {
       url: config.url,
     });
 
-    await login();
+    await login({
+      tokenStorageType: {
+        accessToken: "localStorage",
+        refreshToken: "localStorage",
+      },
+      requestTokenConfig: {
+        accessTokenName: "access_token",
+        refreshTokenName: "refresh_token",
+      },
+    });
 
     setup.mock.onGet(mockUrl).replyOnce(401);
 
-    setup.mock.onPost(config.url).reply(200, { refresh_token: "refresh_token", access_token: "access_token" });
+    setup.mock
+      .onPost(config.url)
+      .reply(200, {
+        refresh_token: "refresh_token",
+        access_token: "access_token",
+      });
 
     setup.mock.onGet(mockUrl).replyOnce(200, successStub);
 
@@ -69,7 +88,7 @@ describe("API Client EventBus", () => {
     expect(response.data).toEqual(successStub);
   });
 
-  async function login() {
+  async function login(tokenConfig: AuthorizationTokenConfig = {}) {
     let loginStub: {} = {
       access_token: "access_token",
       refresh_token: "refresh_token",
@@ -83,12 +102,7 @@ describe("API Client EventBus", () => {
       },
     };
 
-    setup.clientService.auth.setTokenConfig({
-      tokenStorageType: {
-        accessToken: "localStorage",
-        refreshToken: "localStorage",
-      },
-    });
+    setup.clientService.auth.setTokenConfig(tokenConfig);
 
     setup.mock.onPost(config.url).reply(200, loginStub);
 
