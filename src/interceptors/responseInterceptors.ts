@@ -43,6 +43,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
     this.clientService = new ClientServices({
       client: this.client,
       eventBus: this.eventBus,
+      authProtocol: config.authProtocol
     });
 
     // Initialize event bus listeners for dynamic token configuration updates.
@@ -214,8 +215,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
         {
           url: this.tokenRefreshConfig.url || "",
           data: { [tokenData.type]: tokenData.token },
-        },
-        tokenData.type === "refreshToken"
+        }
       );
     } catch (error) {
       console.error(
