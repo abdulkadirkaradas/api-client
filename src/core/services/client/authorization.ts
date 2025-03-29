@@ -9,6 +9,7 @@ import { IStorage, StorageType } from "../../../interfaces/storage";
 import { ClientStorageFactory } from "../../../utils/storage/client/storageFactory";
 import { EventBus } from "../../../utils/eventBus/EventBus";
 import { IServiceConstructor } from "../../../interfaces/service";
+import { AuthProtocolConfig } from "../../../interfaces/core";
 
 /**
  * AuthService class mainly configures the default methods for the authentication service.
@@ -21,6 +22,7 @@ export class AuthorizationService {
 
   private eventBus: EventBus;
   private methods: Methods;
+  private authProtocolConfig: AuthProtocolConfig;
   private storageFactory: ClientStorageFactory;
   private tokenConfig: AuthorizationTokenConfig = {};
   private tokenStorage: { accessToken?: IStorage; refreshToken?: IStorage } =
@@ -29,6 +31,7 @@ export class AuthorizationService {
 
   constructor(config: IServiceConstructor) {
     this.eventBus = config.eventBus;
+    this.authProtocolConfig = config.authProtocol;
     this.methods = new Methods(config.client);
     this.storageFactory = new ClientStorageFactory();
 
@@ -68,29 +71,20 @@ export class AuthorizationService {
    * @param config
    */
   protected createStorage(config: AuthorizationTokenConfig): void {
-    const storageTypes: StorageType[] = [
-      "localStorage",
-      "sessionStorage",
-      "cookie",
-      "json",
-    ];
-
-    // Clear existing token storage to prevent duplicate storage creation
-    this.tokenStorage.accessToken = undefined;
-    this.tokenStorage.refreshToken = undefined;
-
+    const storageTypes: StorageType[] = ["localStorage", "sessionStorage", "cookie", "json"];
+  
     const createTokenStorage = (
-      type: StorageType | null,
+      type: StorageType | null | undefined,
       tokenName: "accessToken" | "refreshToken"
     ) => {
       if (type && storageTypes.includes(type)) {
         this.tokenStorage[tokenName] = this.storageFactory.createStorage(type);
       }
     };
-
-    createTokenStorage(config.tokenStorageType?.accessToken || "localStorage", "accessToken");
-    createTokenStorage(config.tokenStorageType?.refreshToken || "localStorage", "refreshToken");
-  }
+  
+    createTokenStorage(config.tokenStorageType?.accessToken ?? null, "accessToken");
+    createTokenStorage(config.tokenStorageType?.refreshToken ?? null, "refreshToken");
+  }  
 
   /**
    * Returns the storage for the token.
@@ -166,7 +160,7 @@ export class AuthorizationService {
     if (token) {
       this.setToken(token, tokenType);
     } else {
-      throw new Error(`${tokenName} token not found in response.data bag.`);
+      throw new Error(`${tokenType} token not found in response.data bag.`);
     }
   }
 
@@ -192,9 +186,11 @@ export class AuthorizationService {
       this.tokenConfig.requestTokenConfig?.accessTokenName ||
       this.tokenConfig.requestTokenConfig?.refreshTokenName
     ) {
-      [this.accessTokenName, this.refreshTokenName].forEach((type) => {
-        this.handleTokenResponse(response, type as AuthorizationTokenType);
-      });
+      if (this.authProtocolConfig.useOAUTHProtocol) {
+        this.handleTokenResponse(response, this.refreshTokenName as AuthorizationTokenType);
+      }
+      
+      this.handleTokenResponse(response, this.accessTokenName as AuthorizationTokenType);
 
       if (this.tokenConfig.requestTokenConfig.accessTokenName) {
         this.eventBus.emit("auth-client-login:sent", "auth", {
@@ -224,9 +220,6 @@ export class AuthorizationService {
     if (!response || !this.statusCodes.includes(response.status)) {
       throw response;
     }
-
-    this.handleTokenResponse(response, "accessToken");
-    this.handleTokenResponse(response, "refreshToken");
 
     return response;
   }
@@ -268,8 +261,7 @@ export class AuthorizationService {
    * @param refreshTokenExists
    */
   public async refreshToken(
-    config: AuthorizationServiceConfig,
-    refreshTokenExists = false
+    config: AuthorizationServiceConfig
   ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
@@ -281,7 +273,7 @@ export class AuthorizationService {
       throw response;
     }
 
-    [this.accessTokenName, refreshTokenExists && this.refreshTokenName]
+    [this.accessTokenName, this.authProtocolConfig.useOAUTHProtocol && this.refreshTokenName]
       .filter(Boolean)
       .forEach((tokenType) =>
         this.handleTokenResponse(response, tokenType as AuthorizationTokenType)
