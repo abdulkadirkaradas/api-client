@@ -11,6 +11,7 @@ export const createAPIClient = (config: APIClientConfig) => {
     client: new ClientServices({
       client: ApiClient.getInstance(),
       eventBus: ApiClient.getEventBusInstance(),
+      authProtocol: ApiClient.getAuthProtocolConfig(),
       tokenConfig: config.tokenConfig || {},
     }),
   };
