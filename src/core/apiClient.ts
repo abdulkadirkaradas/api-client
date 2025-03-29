@@ -15,7 +15,8 @@ export class APIClient extends APIClientConstructor {
     this.interceptorService = new InterceptorService({
       client: this.client,
       headers: config.headers || {},
-      eventBus: this.getEventBusInstance()
+      eventBus: this.getEventBusInstance(),
+      authProtocol: this.getAuthProtocolConfig()
     });
   }
 }
