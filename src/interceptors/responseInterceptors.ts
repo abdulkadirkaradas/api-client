@@ -17,15 +17,24 @@ import {
  * - Managing event bus listeners for dynamic token configuration updates.
  */
 export class ResponseInterceptor extends InterceptorConstructor {
-  private eventBus: EventBus; // Event bus for managing application-wide events.
-  private clientService: ClientServices; // Client service for handling API requests and authentication.
-  private tokenRefreshConfig: TokenRefreshConfig = {}; // Configuration for token refresh operations.
+  // Event bus for managing application-wide events.
+  private eventBus: EventBus;
+
+  // Client service for handling API requests and authentication.
+  private clientService: ClientServices;
+
+  // Configuration for token refresh operations.
+  private tokenRefreshConfig: TokenRefreshConfig = {};
+
+  // Common HTTP status codes used in error handling.
   private httpStatusCodes = {
     badRequest: 400,
     unauthorized: 401,
     forbidden: 403,
     notFound: 404,
-  }; // Common HTTP status codes used in error handling.
+  };
+
+  // Map of HTTP status codes to the maximum number of retries allowed.
   private maxRetriesMap: Record<number, number> = {
     500: 3, // 3 retries for Internal Server Error.
     502: 5, // 5 retries for Bad Gateway.
@@ -35,6 +44,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   /**
    * Constructor for the ResponseInterceptor class.
    * Initializes the event bus, client service, and registers the response interceptor.
+   * 
    * @param {IInterceptorConfig} config - Configuration object containing the client and event bus.
    */
   constructor(config: IInterceptorConfig) {
@@ -43,7 +53,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
     this.clientService = new ClientServices({
       client: this.client,
       eventBus: this.eventBus,
-      authProtocol: config.authProtocol
+      authProtocol: config.authProtocol,
     });
 
     // Initialize event bus listeners for dynamic token configuration updates.
@@ -56,15 +66,18 @@ export class ResponseInterceptor extends InterceptorConstructor {
   /**
    * Updates the token refresh configuration with the provided settings.
    * This configuration is used when attempting to refresh the access token.
+   * 
    * @param {TokenRefreshConfig} config - Configuration object for token refresh.
    */
   public setTokenRefreshConfig(config: TokenRefreshConfig) {
+    // Merge the new configuration with the existing token refresh configuration.
     this.tokenRefreshConfig = { ...this.tokenRefreshConfig, ...config };
   }
 
   /**
    * Configures the client authentication service with the provided authorization token settings.
    * Also updates the token refresh configuration with the same settings.
+   * 
    * @param {AuthorizationTokenConfig} config - Configuration object for authorization tokens.
    */
   private setClientAuthServiceConfig(config: AuthorizationTokenConfig) {
@@ -211,12 +224,10 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
     try {
       // Send the refresh token request to the server.
-      return this.clientService.auth.refreshToken(
-        {
-          url: this.tokenRefreshConfig.url || "",
-          data: { [tokenData.type]: tokenData.token },
-        }
-      );
+      return this.clientService.auth.refreshToken({
+        url: this.tokenRefreshConfig.url || "",
+        data: { [tokenData.type]: tokenData.token },
+      });
     } catch (error) {
       console.error(
         `An error occurred during token refresh with ${tokenData.type}:`,

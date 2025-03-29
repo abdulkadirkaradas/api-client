@@ -1,15 +1,15 @@
-import { AxiosInstance, AxiosResponse } from "axios";
+import { AuthProtocolConfig } from '../../../interfaces/core';
+import { AxiosResponse } from 'axios';
+import { ClientStorageFactory } from '../../../utils/storage/client/storageFactory';
+import { EventBus } from '../../../utils/eventBus/EventBus';
+import { IServiceConstructor } from '../../../interfaces/service';
+import { IStorage, StorageType } from '../../../interfaces/storage';
+import { Methods } from '../../../methods/methods';
 import {
   AuthorizationServiceConfig,
   AuthorizationTokenConfig,
   AuthorizationTokenType,
 } from "../../../interfaces/auth";
-import { Methods } from "../../../methods/methods";
-import { IStorage, StorageType } from "../../../interfaces/storage";
-import { ClientStorageFactory } from "../../../utils/storage/client/storageFactory";
-import { EventBus } from "../../../utils/eventBus/EventBus";
-import { IServiceConstructor } from "../../../interfaces/service";
-import { AuthProtocolConfig } from "../../../interfaces/core";
 
 /**
  * AuthService class mainly configures the default methods for the authentication service.
@@ -17,40 +17,61 @@ import { AuthProtocolConfig } from "../../../interfaces/core";
  * @class AuthService
  */
 export class AuthorizationService {
+  // Default names for access and refresh tokens
   readonly accessTokenName: string = "accessToken";
   readonly refreshTokenName: string = "refreshToken";
 
+  // Event bus for emitting and listening to events
   private eventBus: EventBus;
+
+  // HTTP methods wrapper for making API requests
   private methods: Methods;
+
+  // Configuration for the authentication protocol
   private authProtocolConfig: AuthProtocolConfig;
+
+  // Factory for creating storage instances
   private storageFactory: ClientStorageFactory;
+
+  // Configuration for tokens
   private tokenConfig: AuthorizationTokenConfig = {};
+
+  // Storage instances for access and refresh tokens
   private tokenStorage: { accessToken?: IStorage; refreshToken?: IStorage } =
     {};
+
+  // List of HTTP status codes considered successful
   private statusCodes: Array<Number> = [200, 201];
 
+  /**
+   * Constructor for the AuthorizationService class.
+   *
+   * @param config - Configuration object for initializing the service.
+   */
   constructor(config: IServiceConstructor) {
-    this.eventBus = config.eventBus;
-    this.authProtocolConfig = config.authProtocol;
-    this.methods = new Methods(config.client);
-    this.storageFactory = new ClientStorageFactory();
+    this.eventBus = config.eventBus; // Initialize the event bus
+    this.authProtocolConfig = config.authProtocol; // Set authentication protocol configuration
+    this.methods = new Methods(config.client); // Initialize HTTP methods wrapper
+    this.storageFactory = new ClientStorageFactory(); // Create a storage factory instance
 
-    this.setTokenConfig(config.tokenConfig || {});
+    this.setTokenConfig(config.tokenConfig || {}); // Set initial token configuration
   }
 
   /**
-   * Sets token configurations
+   * Sets token configurations.
    *
-   * @param config
+   * @param config - Configuration object for tokens.
    */
   public setTokenConfig(config: AuthorizationTokenConfig): void {
+    // Check if the new configuration differs from the existing one
     const isConfigChanged =
       JSON.stringify(this.tokenConfig) !== JSON.stringify(config);
 
     if (isConfigChanged) {
-      this.tokenConfig = { ...this.tokenConfig, ...config };
-      this.createStorage(this.tokenConfig);
+      this.tokenConfig = { ...this.tokenConfig, ...config }; // Merge new config with existing one
+      this.createStorage(this.tokenConfig); // Create storage for tokens
 
+      // Emit an event to notify about the token configuration change
       this.eventBus.emit("auth-client-token-config", "auth", {
         config:
           Object.keys(this.tokenConfig).length !== 0 ? this.tokenConfig : {},
@@ -59,7 +80,9 @@ export class AuthorizationService {
   }
 
   /**
-   * Returns the existing token configuration
+   * Returns the existing token configuration.
+   *
+   * @returns The current token configuration.
    */
   public getTokenConfig(): AuthorizationTokenConfig {
     return this.tokenConfig;
@@ -68,11 +91,18 @@ export class AuthorizationService {
   /**
    * Creates the storage for both authentication and refresh tokens.
    *
-   * @param config
+   * @param config - Configuration object for tokens.
    */
   protected createStorage(config: AuthorizationTokenConfig): void {
-    const storageTypes: StorageType[] = ["localStorage", "sessionStorage", "cookie", "json"];
-  
+    // Supported storage types
+    const storageTypes: StorageType[] = [
+      "localStorage",
+      "sessionStorage",
+      "cookie",
+      "json",
+    ];
+
+    // Helper function to create storage for a specific token type
     const createTokenStorage = (
       type: StorageType | null | undefined,
       tokenName: "accessToken" | "refreshToken"
@@ -81,15 +111,23 @@ export class AuthorizationService {
         this.tokenStorage[tokenName] = this.storageFactory.createStorage(type);
       }
     };
-  
-    createTokenStorage(config.tokenStorageType?.accessToken ?? null, "accessToken");
-    createTokenStorage(config.tokenStorageType?.refreshToken ?? null, "refreshToken");
-  }  
+
+    // Create storage for access and refresh tokens
+    createTokenStorage(
+      config.tokenStorageType?.accessToken ?? null,
+      "accessToken"
+    );
+    createTokenStorage(
+      config.tokenStorageType?.refreshToken ?? null,
+      "refreshToken"
+    );
+  }
 
   /**
    * Returns the storage for the token.
    *
-   * @param tokenType
+   * @param tokenType - The type of token (accessToken or refreshToken).
+   * @returns The storage instance for the specified token type.
    */
   public getStorage(tokenType: AuthorizationTokenType): IStorage | any {
     return tokenType === "accessToken"
@@ -100,20 +138,19 @@ export class AuthorizationService {
   /**
    * Sets the authentication token in the storage.
    *
-   * @param config
-   * @param token
-   * @param tokenType
+   * @param token - The token value to be stored.
+   * @param tokenType - The type of token (accessToken or refreshToken).
    */
   protected setToken(token: string, tokenType: AuthorizationTokenType): void {
-    const storage = this.getStorage(tokenType);
+    const storage = this.getStorage(tokenType); // Get the storage instance for the token type
     const tokenName =
       tokenType === "accessToken"
         ? this.accessTokenName
         : this.refreshTokenName;
 
     if (storage && tokenName) {
-      storage.remove(tokenName);
-      storage.set(tokenName, token);
+      storage.remove(tokenName); // Remove any existing token
+      storage.set(tokenName, token); // Store the new token
     } else {
       throw new Error(`Token storage or name is not defined for ${tokenType}.`);
     }
@@ -122,18 +159,17 @@ export class AuthorizationService {
   /**
    * Removes the authentication token from the storage.
    *
-   * @param config
-   * @param tokenType
+   * @param tokenType - The type of token (accessToken or refreshToken).
    */
   protected removeToken(tokenType: AuthorizationTokenType): void {
-    const storage = this.getStorage(tokenType);
+    const storage = this.getStorage(tokenType); // Get the storage instance for the token type
     const tokenName =
       tokenType === "accessToken"
         ? this.accessTokenName
         : this.refreshTokenName;
 
     if (storage && tokenName) {
-      storage.remove(tokenName);
+      storage.remove(tokenName); // Remove the token from storage
     } else {
       throw new Error(
         `Token name: '${tokenName}' for '${tokenType}' is not defined.`
@@ -144,9 +180,8 @@ export class AuthorizationService {
   /**
    * Handles the token response and sets the token in the storage.
    *
-   * @param response
-   * @param config
-   * @param tokenType
+   * @param response - The HTTP response containing the token.
+   * @param tokenType - The type of token (accessToken or refreshToken).
    */
   protected handleTokenResponse(
     response: AxiosResponse,
@@ -156,9 +191,9 @@ export class AuthorizationService {
       tokenType === "accessToken"
         ? this.tokenConfig.requestTokenConfig?.accessTokenName
         : this.tokenConfig.requestTokenConfig?.refreshTokenName;
-    const token = response.data[tokenName || ""];
+    const token = response.data[tokenName || ""]; // Extract the token from the response
     if (token) {
-      this.setToken(token, tokenType);
+      this.setToken(token, tokenType); // Store the token
     } else {
       throw new Error(`${tokenType} token not found in response.data bag.`);
     }
@@ -167,7 +202,8 @@ export class AuthorizationService {
   /**
    * Logs in the user and sets the authentication token in the storage.
    *
-   * @param config
+   * @param config - Configuration object for the login request.
+   * @returns The HTTP response from the login request.
    */
   public async login(
     config: AuthorizationServiceConfig
@@ -179,7 +215,7 @@ export class AuthorizationService {
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
-      throw response;
+      throw response; // Throw an error if the response status is not successful
     }
 
     if (
@@ -187,10 +223,16 @@ export class AuthorizationService {
       this.tokenConfig.requestTokenConfig?.refreshTokenName
     ) {
       if (this.authProtocolConfig.useOAUTHProtocol) {
-        this.handleTokenResponse(response, this.refreshTokenName as AuthorizationTokenType);
+        this.handleTokenResponse(
+          response,
+          this.refreshTokenName as AuthorizationTokenType
+        );
       }
-      
-      this.handleTokenResponse(response, this.accessTokenName as AuthorizationTokenType);
+
+      this.handleTokenResponse(
+        response,
+        this.accessTokenName as AuthorizationTokenType
+      );
 
       if (this.tokenConfig.requestTokenConfig.accessTokenName) {
         this.eventBus.emit("auth-client-login:sent", "auth", {
@@ -206,7 +248,8 @@ export class AuthorizationService {
   /**
    * Registers the user and sets the authentication token in the storage.
    *
-   * @param config
+   * @param config - Configuration object for the registration request.
+   * @returns The HTTP response from the registration request.
    */
   public async register(
     config: AuthorizationServiceConfig
@@ -218,7 +261,7 @@ export class AuthorizationService {
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
-      throw response;
+      throw response; // Throw an error if the response status is not successful
     }
 
     return response;
@@ -227,7 +270,8 @@ export class AuthorizationService {
   /**
    * Logs out the user and removes the authentication token from the storage.
    *
-   * @param config
+   * @param config - Configuration object for the logout request.
+   * @returns The HTTP response from the logout request.
    */
   public async logout(
     config: AuthorizationServiceConfig
@@ -239,9 +283,10 @@ export class AuthorizationService {
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
-      throw response;
+      throw response; // Throw an error if the response status is not successful
     }
 
+    // Remove both access and refresh tokens from storage
     [this.accessTokenName, this.refreshTokenName].forEach((tokenType) =>
       this.removeToken(tokenType as AuthorizationTokenType)
     );
@@ -252,13 +297,8 @@ export class AuthorizationService {
   /**
    * Refreshes the authentication token.
    *
-   * If you are using a 'refresh' and 'authorization' token structure, the 'refreshTokenExists' flag should be activated
-   * and appropriate authorization and refresh token names (returned from the API) should be provided.
-   *
-   * If only the authorization token structure is used, it can continue to be used by default config.
-   *
-   * @param config
-   * @param refreshTokenExists
+   * @param config - Configuration object for the token refresh request.
+   * @returns The HTTP response from the token refresh request.
    */
   public async refreshToken(
     config: AuthorizationServiceConfig
@@ -270,10 +310,14 @@ export class AuthorizationService {
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
-      throw response;
+      throw response; // Throw an error if the response status is not successful
     }
 
-    [this.accessTokenName, this.authProtocolConfig.useOAUTHProtocol && this.refreshTokenName]
+    // Handle both access and refresh tokens if applicable
+    [
+      this.accessTokenName,
+      this.authProtocolConfig.useOAUTHProtocol && this.refreshTokenName,
+    ]
       .filter(Boolean)
       .forEach((tokenType) =>
         this.handleTokenResponse(response, tokenType as AuthorizationTokenType)
