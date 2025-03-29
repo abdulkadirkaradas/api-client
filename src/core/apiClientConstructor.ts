@@ -5,8 +5,10 @@ import { EventBus } from '../utils/eventBus/EventBus';
 export class APIClientConstructor {
     protected client: AxiosInstance;
     protected eventBus: EventBus;
+    private config: APIClientConfig;
 
     constructor(config: APIClientConfig) {
+        this.config = config;
         this.client = axios.create(config);
         this.eventBus = new EventBus();
     }
@@ -17,5 +19,9 @@ export class APIClientConstructor {
 
     public getEventBusInstance() {
         return this.eventBus as EventBus;
+    }
+
+    public getAuthProtocolConfig() {
+        return this.config.authProtocol;
     }
 }
