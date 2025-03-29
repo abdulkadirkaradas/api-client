@@ -10,12 +10,14 @@ export class InterceptorService {
     this.request = new RequestInterceptor({
       client: config.client,
       eventBus: config.eventBus,
+      authProtocol: config.authProtocol,
       headers: config.headers,
     });
 
     this.response = new ResponseInterceptor({
       client: config.client,
-      eventBus: config.eventBus
+      eventBus: config.eventBus,
+      authProtocol: config.authProtocol,
     });
   }
 }

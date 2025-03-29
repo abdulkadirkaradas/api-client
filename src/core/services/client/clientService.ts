@@ -19,6 +19,7 @@ export class ClientServices {
     this.auth = new WebAuthorizationService({
       client: config.client,
       eventBus: config.eventBus,
+      authProtocol: config.authProtocol,
       tokenConfig: config?.tokenConfig || {},
     });
   }
