@@ -8,9 +8,5 @@ export type AuthProtocolConfig = {
 
 export interface APIClientConfig extends AxiosRequestConfig {
     authProtocol: AuthProtocolConfig;
-    token?: {
-        accessToken: string | null;
-        refreshToken: string | null;
-    };
     tokenConfig?: AuthorizationTokenConfig | null;
 }
