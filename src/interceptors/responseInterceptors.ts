@@ -5,6 +5,7 @@ import { EventBus } from "../utils/eventBus/EventBus";
 import { handleAPIError } from "../utils/error/errorHandler";
 import { InterceptorConstructor } from "./interceptorConstructor";
 import {
+  AuthRequestsSent,
   IInterceptorConfig,
   TokenRefreshConfig,
 } from "../interfaces/interceptors";
@@ -25,6 +26,8 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
   // Configuration for token refresh operations.
   private tokenRefreshConfig: TokenRefreshConfig = {};
+
+  private authRequestsSent: AuthRequestsSent = {};
 
   // Common HTTP status codes used in error handling.
   private httpStatusCodes = {
@@ -61,6 +64,19 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
     // Register the response interceptor to handle API responses and errors.
     this.registerInterceptor();
+  }
+
+  /**
+   * Sets the send status of login request for the interceptor.
+   * This status is used to track whether a login request has been sent.
+   *
+   * @param config - Configuration object for the interceptor.
+   */
+  private setAuthRequestSent(config: AuthRequestsSent) {
+    this.authRequestsSent = {
+      ...this.authRequestsSent,
+      ...config,
+    };
   }
 
   /**
@@ -106,7 +122,10 @@ export class ResponseInterceptor extends InterceptorConstructor {
         };
 
         // If the error is unauthorized, attempt to refresh the token.
-        if (error.response?.status === this.httpStatusCodes.unauthorized) {
+        if (
+          error.response?.status === this.httpStatusCodes.unauthorized &&
+          this.authRequestsSent.login
+        ) {
           console.warn("Unauthorized! Trying to refresh token...");
 
           try {
@@ -211,10 +230,14 @@ export class ResponseInterceptor extends InterceptorConstructor {
       );
     }
 
+    this.setTokenRefreshConfig({
+      storage: atStorage,
+    });
+
     // Determine which token to use for the refresh request.
-    const tokenData = rtStorage
-      ? { token: rtStorage.get("refreshToken"), type: "refreshToken" }
-      : { token: atStorage?.get("accessToken"), type: "accessToken" };
+    const tokenData = atStorage
+      ? { token: atStorage?.get("accessToken"), type: "accessToken" }
+      : { token: rtStorage.get("refreshToken"), type: "refreshToken" };
 
     if (!tokenData.token) {
       throw new Error(`${tokenData.type} is not available in storage.`);
@@ -252,6 +275,17 @@ export class ResponseInterceptor extends InterceptorConstructor {
       ({ config }: { config: AuthorizationTokenConfig }) => {
         // Update the client authentication service configuration.
         this.setClientAuthServiceConfig(config);
+      }
+    );
+
+    this.eventBus.subscribe(
+      "auth-client-login:sent", // Event name
+      "auth", // Event namespace
+      ({ sent }: { sent: boolean }) => {
+        // Update the login request sent status.
+        this.setAuthRequestSent({
+          login: sent,
+        });
       }
     );
   }
