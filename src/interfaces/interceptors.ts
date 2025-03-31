@@ -24,3 +24,10 @@ export interface TokenRefreshConfig {
   config?: AuthorizationTokenConfig;
   storage?: IStorage;
 }
+
+export interface AuthRequestsSent {
+  login?: boolean;
+  logout?: boolean;
+  register?: boolean;
+  refreshToken?: boolean;
+};
