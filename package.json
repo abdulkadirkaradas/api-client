@@ -3,28 +3,42 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "test": "jest",
     "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/abdulkadirkaradas/api-client"
+    "url": "git+https://github.com:abdulkadirkaradas/moodo.git"
   },
   "keywords": [
     "api",
+    "axios",
+    "moodo",
+    "moodo api",
+    "moodo client",
+    "moodo api client",
     "laravel",
     "react",
     "vuejs",
-    "api client"
+    "angular",
+    "api client",
+    "browser",
+    "frontend",
+    "typescript"
   ],
   "author": "AK(saferias)",
   "bugs": {
-    "url": "https://github.com/abdulkadirkaradas/api-client/issues"
+    "url": "https://github.com/abdulkadirkaradas/moodo/issues"
   },
-  "homepage": "https://github.com/abdulkadirkaradas/api-client#readme",
-  "license": "ISC",
-  "description": "",
+  "homepage": "https://github.com/abdulkadirkaradas/moodo#readme",
+  "license": "MIT",
+  "description": "Simple API Client package based on axios. Types included.",
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "axios": "^1.8.3",
