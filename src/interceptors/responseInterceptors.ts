@@ -44,7 +44,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   /**
    * Constructor for the ResponseInterceptor class.
    * Initializes the event bus, client service, and registers the response interceptor.
-   * 
+   *
    * @param {IInterceptorConfig} config - Configuration object containing the client and event bus.
    */
   constructor(config: IInterceptorConfig) {
@@ -66,7 +66,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   /**
    * Updates the token refresh configuration with the provided settings.
    * This configuration is used when attempting to refresh the access token.
-   * 
+   *
    * @param {TokenRefreshConfig} config - Configuration object for token refresh.
    */
   public setTokenRefreshConfig(config: TokenRefreshConfig) {
@@ -77,7 +77,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   /**
    * Configures the client authentication service with the provided authorization token settings.
    * Also updates the token refresh configuration with the same settings.
-   * 
+   *
    * @param {AuthorizationTokenConfig} config - Configuration object for authorization tokens.
    */
   private setClientAuthServiceConfig(config: AuthorizationTokenConfig) {
@@ -106,10 +106,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
         };
 
         // If the error is unauthorized, attempt to refresh the token.
-        if (
-          this.tokenRefreshConfig.url &&
-          error.response?.status === this.httpStatusCodes.unauthorized
-        ) {
+        if (error.response?.status === this.httpStatusCodes.unauthorized) {
           console.warn("Unauthorized! Trying to refresh token...");
 
           try {
@@ -185,6 +182,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
    * @throws {Error} Throws an error if the token configuration or storage type is missing.
    * @throws {Error} Throws an error if neither access token nor refresh token storage is available.
    * @throws {Error} Throws an error if the required token is not available in the storage.
+   * @throws {Error} Throws an error if the token refresh URL is not provided.
    * @throws {Error} Throws an error if the token refresh process fails.
    *
    * @returns {Promise<any>} Returns a promise that resolves with the result of the token refresh operation.
@@ -220,6 +218,11 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
     if (!tokenData.token) {
       throw new Error(`${tokenData.type} is not available in storage.`);
+    }
+
+    // Throws an error if the token refresh URL is not provided.
+    if (!this.tokenRefreshConfig.url) {
+      throw new Error("Token refresh URL is not provided.");
     }
 
     try {
