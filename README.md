@@ -127,6 +127,10 @@ Related Code: [Token Refresh Structure](https://github.com/abdulkadirkaradas/api
 >
 > A token refresh endpoint is required for the automatic token refresh structure to function. If it is not provided, the corresponding error will be thrown.
 
+> [!warning]
+>
+> Automatic token refresh structure requires the `AuthorizationService.login()` function to be called at least once. If it is not called, automatic token refresh will not be triggered.
+
 ```typescript
 interceptorService.response.setTokenRefreshConfig({
   url: config.url,
