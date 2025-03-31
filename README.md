@@ -18,6 +18,22 @@
 
 # Documentation
 
+## Installation
+
+Add package dependency;
+
+```bash
+npm i moodo
+
+```
+
+Add package as a devDependecy;
+
+```bash
+npm i --save-dev moodo
+
+```
+
 ## Example
 
 Moodo API Client aims to provide developers with a pre-configured approach to basic `Authorization` processes.
