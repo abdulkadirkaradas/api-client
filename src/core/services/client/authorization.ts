@@ -192,9 +192,12 @@ export class AuthorizationService {
         : this.tokenConfig.requestTokenConfig?.refreshTokenName;
     const token = response.data[tokenName || ""]; // Extract the token from the response
     if (token) {
-      this.setToken(token, tokenType); // Store the token
+      this.setToken(token, tokenType);
     } else {
-      throw new Error(`${tokenType} token not found in response.data bag.`);
+      console.warn(
+        `${tokenType} token not found in response.data bag. Related token could not be set.`
+      );
+      return;
     }
   }
 
@@ -217,29 +220,28 @@ export class AuthorizationService {
       throw response; // Throw an error if the response status is not successful
     }
 
-    //TODO Burayı refactor et
-    if (
-      this.tokenConfig.requestTokenConfig?.accessTokenName ||
-      this.tokenConfig.requestTokenConfig?.refreshTokenName
-    ) {
-      if (this.authProtocolConfig.useOAUTHProtocol) {
-        this.handleTokenResponse(
-          response,
-          this.refreshTokenName as AuthorizationTokenType
-        );
-      }
+    if (this.authProtocolConfig.useAuthProtocol) {
+      ["accessToken", "refreshToken"].forEach((tokenType) => {
+        const tokenName =
+          tokenType === "accessToken"
+            ? this.tokenConfig.requestTokenConfig?.accessTokenName
+            : this.tokenConfig.requestTokenConfig?.refreshTokenName;
+        if (
+          tokenName &&
+          (tokenType === "accessToken" ||
+            this.authProtocolConfig.useOAUTHProtocol)
+        ) {
+          this.handleTokenResponse(
+            response,
+            tokenType as AuthorizationTokenType
+          );
+        }
+      });
 
-      this.handleTokenResponse(
-        response,
-        this.accessTokenName as AuthorizationTokenType
-      );
-
-      if (this.tokenConfig.requestTokenConfig.accessTokenName) {
-        this.eventBus.emit("auth-client-login:sent", "auth", {
-          sent: true,
-          storage: this.getStorage("accessToken"),
-        });
-      }
+      this.eventBus.emit("auth-client-login:sent", "auth", {
+        sent: true,
+        storage: this.getStorage("accessToken"),
+      });
     }
 
     return response;
@@ -283,13 +285,21 @@ export class AuthorizationService {
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
-      throw response; // Throw an error if the response status is not successful
+      // Throw an error if the response status is not successful
+      throw response;
     }
 
-    // Remove both access and refresh tokens from storage
-    [this.accessTokenName, this.refreshTokenName].forEach((tokenType) =>
-      this.removeToken(tokenType as AuthorizationTokenType)
-    );
+    if (this.authProtocolConfig.useAuthProtocol) {
+      ["accessToken", "refreshToken"].forEach((tokenType) => {
+        if (
+          tokenType === "accessToken" ||
+          (this.authProtocolConfig.useOAUTHProtocol &&
+            tokenType === "refreshToken")
+        ) {
+          this.removeToken(tokenType as AuthorizationTokenType);
+        }
+      });
+    }
 
     return response;
   }
@@ -313,15 +323,21 @@ export class AuthorizationService {
       throw response; // Throw an error if the response status is not successful
     }
 
-    // Handle both access and refresh tokens if applicable
-    [
-      this.accessTokenName,
-      this.authProtocolConfig.useOAUTHProtocol && this.refreshTokenName,
-    ]
-      .filter(Boolean)
-      .forEach((tokenType) =>
-        this.handleTokenResponse(response, tokenType as AuthorizationTokenType)
-      );
+    if (this.authProtocolConfig.useAuthProtocol) {
+      [this.accessTokenName, this.refreshTokenName]
+        .filter(
+          (tokenName) =>
+            tokenName === this.accessTokenName ||
+            (this.authProtocolConfig.useOAUTHProtocol &&
+              tokenName === this.refreshTokenName)
+        )
+        .forEach((tokenType) =>
+          this.handleTokenResponse(
+            response,
+            tokenType as AuthorizationTokenType
+          )
+        );
+    }
 
     return response;
   }
