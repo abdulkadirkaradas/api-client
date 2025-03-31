@@ -109,9 +109,6 @@ describe("API Client Autorization Service", () => {
       });
   });
 
-  //TODO logout function structure will be refactored
-  // it('Is logout service works', () => {});
-
   it("should handle refresh token service successfully", () => {
     let resfreshTokenStub: Object = {
       access_token: "string",
@@ -132,6 +129,21 @@ describe("API Client Autorization Service", () => {
       .then(function (result) {
         expect(storage?.get("accessToken")).toBe(result.data.access_token);
         expect(storage?.get("refreshToken")).toBe(result.data.refresh_token);
+      });
+  });
+
+  it("should handle user logout service successfully", () => {
+    let config: AuthorizationServiceConfig = {
+      url: "/auth/logout",
+    };
+
+    setup.mock.onPost(config.url).reply(200);
+
+    setup.clientService.auth
+      .logout(config)
+      .then(function (result) {
+        expect(storage?.get("accessToken")).toBeNull();
+        expect(storage?.get("refreshToken")).toBeNull();
       });
   });
 
