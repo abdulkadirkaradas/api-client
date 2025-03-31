@@ -99,7 +99,6 @@ export class AuthorizationService {
       "localStorage",
       "sessionStorage",
       "cookie",
-      "json",
     ];
 
     // Helper function to create storage for a specific token type
@@ -210,14 +209,15 @@ export class AuthorizationService {
   ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
-      config.data,
-      config.config
+      config.data || {},
+      config.config || {}
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
       throw response; // Throw an error if the response status is not successful
     }
 
+    //TODO Burayı refactor et
     if (
       this.tokenConfig.requestTokenConfig?.accessTokenName ||
       this.tokenConfig.requestTokenConfig?.refreshTokenName
@@ -256,8 +256,8 @@ export class AuthorizationService {
   ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
-      config.data,
-      config.config
+      config.data || {},
+      config.config || {}
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
@@ -278,8 +278,8 @@ export class AuthorizationService {
   ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
-      config.data,
-      config.config
+      config.data || {},
+      config.config || {}
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
@@ -305,8 +305,8 @@ export class AuthorizationService {
   ): Promise<AxiosResponse<any, any>> {
     const response = await this.methods.post(
       config.url,
-      config.data,
-      config.config
+      config.data || {},
+      config.config || {}
     );
 
     if (!response || !this.statusCodes.includes(response.status)) {
