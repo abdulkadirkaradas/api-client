@@ -3,7 +3,7 @@ import { APIClient } from '../../src/core/apiClient';
 import { APIClientConfig } from '../../src/interfaces/core';
 import { ClientServices } from '../../src/core/services/client/clientService';
 import { ClientStorageFactory } from '../../src/utils/storage/client/storageFactory';
-import { createAPIClient } from '../../src/index';
+import { moodo } from '../../src/index';
 import { EventBus } from '../../src/utils/eventBus/EventBus';
 import { MethodGenerator } from '../../src/methods/generator';
 
@@ -28,7 +28,7 @@ export class TestSetup {
       },
     };
 
-    const create = createAPIClient(this.config);
+    const create = moodo(this.config);
     this.instance = create.ApiClient;
     this.eventBus = create.EventBus;
     this.methodGenerator = create.MethodGenerator;
