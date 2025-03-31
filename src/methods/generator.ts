@@ -1,4 +1,4 @@
-import { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import { AxiosInstance } from "axios";
 import { GeneratedMethods, RequestConfig } from "../interfaces/methods";
 
 /**
@@ -17,7 +17,7 @@ export class MethodGenerator {
 
   /**
    * Constructor to initialize the MethodGenerator with an Axios client.
-   * 
+   *
    * @param client {AxiosInstance} - The Axios client instance
    */
   constructor(client: AxiosInstance) {
@@ -27,7 +27,7 @@ export class MethodGenerator {
   /**
    * Binds the methods configuration to the generator.
    * This configuration will be used to generate HTTP methods dynamically.
-   * 
+   *
    * @param methodsConfig {RequestConfig[]} - The configuration of the methods
    */
   public bind(methodsConfig: RequestConfig[]): void {
@@ -37,13 +37,14 @@ export class MethodGenerator {
   /**
    * Generates and returns the methods based on the specified configurations.
    * Each method is dynamically created and bound to the configuration provided.
-   * 
+   *
    * @returns {GeneratedMethods<typeof this.methodsConfig>} - An object containing the generated methods
    * @throws {Error} - Throws an error if the HTTP method is missing or if a duplicate method name is detected
    */
   public getMethods(): GeneratedMethods<typeof this.methodsConfig> {
     // Initialize an empty object to store the generated methods
-    const methods: GeneratedMethods<typeof this.methodsConfig> = {} as GeneratedMethods<typeof this.methodsConfig>;
+    const methods: GeneratedMethods<typeof this.methodsConfig> =
+      {} as GeneratedMethods<typeof this.methodsConfig>;
 
     // Iterate over each method configuration
     this.methodsConfig.forEach((config) => {
@@ -56,7 +57,10 @@ export class MethodGenerator {
       }
 
       // Check if the method name already exists to prevent duplicates
-      if (this.existsMethodNames.length !== 0 && this.existsMethodNames.includes(name)) {
+      if (
+        this.existsMethodNames.length !== 0 &&
+        this.existsMethodNames.includes(name)
+      ) {
         throw new Error(`Method name "${name}" is already exists`);
       }
 
