@@ -190,7 +190,20 @@ export class AuthorizationService {
       tokenType === "accessToken"
         ? this.tokenConfig.requestTokenConfig?.accessTokenName
         : this.tokenConfig.requestTokenConfig?.refreshTokenName;
-    const token = response.data[tokenName || ""]; // Extract the token from the response
+
+    if (!tokenName) {
+      throw new Error(
+        `Token name for ${tokenType} is not defined in the token configuration.`
+      );
+    }
+
+    if (!response.data) {
+      throw new Error(
+        `Response data is not defined. Unable to extract ${tokenType} token.`
+      );
+    }
+
+    const token = response.data[tokenName || ""];
     if (token) {
       this.setToken(token, tokenType);
     } else {
@@ -221,14 +234,14 @@ export class AuthorizationService {
     }
 
     if (this.authProtocolConfig.useAuthProtocol) {
-      ["accessToken", "refreshToken"].forEach((tokenType) => {
+      [this.accessTokenName, this.refreshTokenName].forEach((tokenType) => {
         const tokenName =
-          tokenType === "accessToken"
+          tokenType === this.accessTokenName
             ? this.tokenConfig.requestTokenConfig?.accessTokenName
             : this.tokenConfig.requestTokenConfig?.refreshTokenName;
         if (
-          tokenName &&
-          (tokenType === "accessToken" ||
+          tokenName ||
+          (tokenType === this.refreshTokenName &&
             this.authProtocolConfig.useOAUTHProtocol)
         ) {
           this.handleTokenResponse(
@@ -238,10 +251,20 @@ export class AuthorizationService {
         }
       });
 
-      this.eventBus.emit("auth-client-login:sent", "auth", {
-        sent: true,
-        storage: this.getStorage("accessToken"),
-      });
+      const accessTokenStorage = this.getStorage("accessToken");
+      const refreshTokenStorage = this.getStorage("refreshToken");
+
+      if (
+        accessTokenStorage.get(this.accessTokenName) ||
+        refreshTokenStorage.get(this.refreshTokenName)
+      ) {
+        this.eventBus.emit("auth-client-login:sent", "auth", {
+          sent: true,
+          storage: accessTokenStorage,
+        });
+      } else {
+        console.warn("Tokens were not successfully stored. Event not emitted.");
+      }
     }
 
     return response;
@@ -290,15 +313,15 @@ export class AuthorizationService {
     }
 
     if (this.authProtocolConfig.useAuthProtocol) {
-      ["accessToken", "refreshToken"].forEach((tokenType) => {
-        if (
+      [this.accessTokenName, this.refreshTokenName]
+        .filter((tokenType) => {
           tokenType === "accessToken" ||
-          (this.authProtocolConfig.useOAUTHProtocol &&
-            tokenType === "refreshToken")
-        ) {
+            (this.authProtocolConfig.useOAUTHProtocol &&
+              tokenType === "refreshToken");
+        })
+        .forEach((tokenType) => {
           this.removeToken(tokenType as AuthorizationTokenType);
-        }
-      });
+        });
     }
 
     return response;
@@ -324,19 +347,18 @@ export class AuthorizationService {
     }
 
     if (this.authProtocolConfig.useAuthProtocol) {
-      [this.accessTokenName, this.refreshTokenName]
-        .filter(
-          (tokenName) =>
-            tokenName === this.accessTokenName ||
-            (this.authProtocolConfig.useOAUTHProtocol &&
-              tokenName === this.refreshTokenName)
-        )
-        .forEach((tokenType) =>
+      [this.accessTokenName, this.refreshTokenName].forEach((tokenType) => {
+        if (
+          tokenType === this.accessTokenName ||
+          (this.authProtocolConfig.useOAUTHProtocol &&
+            tokenType === this.refreshTokenName)
+        ) {
           this.handleTokenResponse(
             response,
             tokenType as AuthorizationTokenType
-          )
-        );
+          );
+        }
+      });
     }
 
     return response;
