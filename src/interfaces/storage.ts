@@ -1,4 +1,4 @@
-export type StorageType = "localStorage" | "sessionStorage" | "cookie" | "json";
+export type StorageType = "localStorage" | "sessionStorage" | "cookie";
 
 export type ServiceStorageCustomConfig = { [key: string]: StorageType };
 
