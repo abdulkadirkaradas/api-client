@@ -5,7 +5,7 @@ import { ClientStorageFactory } from "./utils/storage/client/storageFactory";
 import { MethodGenerator as Generator } from './methods/generator';
 import { EventBus as EventBusClass } from './utils/eventBus/EventBus';
 
-export const createAPIClient = (config: APIClientConfig) => {
+export const moodo = (config: APIClientConfig) => {
   const ApiClient = new APIClient(config);
   const EventBus = new EventBusClass();
   const MethodGenerator = new Generator(ApiClient.getInstance());
