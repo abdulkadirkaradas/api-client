@@ -51,9 +51,9 @@ The basic configuration settings and a usage example are as follows:
 > If `authProtocol` property is not configured correctly, tokens will not be stored and used properly!
 
 ```typescript
-import { createAPIClient } from "moodo";
+import { moodo } from "moodo";
 
-const instance = new createAPIClient({
+const instance = new moodo({
   authProtocol: {
     useAuthProtocol: true,
     useOAUTHProtocol: true,
@@ -217,9 +217,9 @@ Contains built-in `login`, `register`, `logout`, and `refreshToken` methods.
 Token Configuration setting initially;
 
 ```typescript
-import { createAPIClient } from "moodo";
+import { moodo } from "moodo";
 
-const instance = new createAPIClient({
+const instance = new moodo({
   authProtocol: {
     useAuthProtocol: true,
     useOAUTHProtocol: true,
