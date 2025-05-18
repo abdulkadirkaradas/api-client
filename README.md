@@ -338,17 +338,23 @@ The ClientServices storage management structure differs from Storages facade. Cl
 ```typescript
 const clientService = instance.Services.client;
 
-// Set storage types for the ClientService
-clientService.setStorageType({
-  testStorage1: "localStorage",
-  testStorage2: "sessionStorage",
-  testStorage3: "cookie",
+// Create storages with the specified types
+const storages = clientService.createStorages({
+  testStorage1: {
+    type: "localStorage"
+  },
+  testStorage2: {
+    type: "sessionStorage"
+  },
+  testStorage3: {
+    type: "cookie"
+  }
 });
 
-// Create storages with the specified types
-const storage1 = clientService.getStorage("testStorage1");
-const storage2 = clientService.getStorage("testStorage2");
-const storage3 = clientService.getStorage("testStorage3");
+// Access the storages
+const storage1 = storages.testStorage1;
+const storage2 = storages.testStorage2;
+const storage3 = storages.testStorage3;
 
 // Set data in the storages
 storage1.set("key1", "value1");
