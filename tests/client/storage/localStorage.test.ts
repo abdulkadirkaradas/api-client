@@ -23,10 +23,11 @@ describe("API Client Storage/LocalStorage servie", () => {
       },
     });
 
-    setup.clientService.setStorageType({
-      localStorage: "localStorage",
-    });
-    storage = setup.clientService.getStorage("localStorage");
+    storage = setup.clientService.createStorages({
+      localStorage: {
+        type: "localStorage"
+      }
+    }).localStorage;
   });
 
   it("should store tokens in localStorage after login", () => {
@@ -46,8 +47,8 @@ describe("API Client Storage/LocalStorage servie", () => {
     setup.clientService.auth
       .login(config)
       .then(function (result) {
-        expect(storage?.get("accessToken")).toBe(result.data.access_token);
-        expect(storage?.get("refreshToken")).toBe(result.data.refresh_token);
+        expect(storage.get("accessToken")).toBe(result.data.access_token);
+        expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
       })
       .catch(function (result) {
         console.error(result);
@@ -57,28 +58,28 @@ describe("API Client Storage/LocalStorage servie", () => {
   it("should retrieve stored items from localStorage", () => {
     setTestValues();
 
-    expect(storage?.get("testItem")).toBe("test");
+    expect(storage.get("testItem")).toBe("test");
   });
 
   it("should remove a specific item from localStorage", () => {
     setTestValues();
 
-    storage?.remove("testItem");
+    storage.remove("testItem");
 
-    expect(storage?.get("testItem")).toBeNull();
+    expect(storage.get("testItem")).toBeNull();
   });
 
   it("should clear all items from localStorage", () => {
     setTestValues();
 
-    storage?.clear();
+    storage.clear();
 
-    expect(storage?.get("testItem")).toBeNull();
+    expect(storage.get("testItem")).toBeNull();
   });
 
   function setTestValues() {
-    storage?.clear();
+    storage.clear();
 
-    storage?.set("testItem", "test");
+    storage.set("testItem", "test");
   }
 });
