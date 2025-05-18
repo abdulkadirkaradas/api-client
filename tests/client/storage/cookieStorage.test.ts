@@ -11,36 +11,37 @@ describe("API Client Storage/CookieStorage servie", () => {
     localStorage.clear();
     jest.clearAllMocks();
 
-    setup.clientService.setStorageType({
-      cookie: "cookie",
-    });
-    storage = setup.clientService.getStorage("cookie");
+    storage = setup.clientService.createStorages({
+      cookie: {
+        type: "cookie"
+      }
+    }).cookie;
   });
 
   it("should store a value in cookie storage", () => {
     let testValue = "test value is set";
 
-    storage?.set("testItem", testValue);
-    expect(storage?.get("testItem")).toBe(testValue);
+    storage.set("testItem", testValue);
+    expect(storage.get("testItem")).toBe(testValue);
   });
 
   it("should retrieve a value from cookie storage", () => {
     setTestValues();
 
-    expect(storage?.get("testItem")).toBe("test");
+    expect(storage.get("testItem")).toBe("test");
   });
 
   it("should remove a specific value from cookie storage", () => {
     setTestValues();
 
-    storage?.remove("testItem");
+    storage.remove("testItem");
 
-    expect(storage?.get("testItem")).toBeNull();
+    expect(storage.get("testItem")).toBeNull();
   });
 
   function setTestValues() {
-    storage?.clear();
+    storage.clear();
 
-    storage?.set("testItem", "test");
+    storage.set("testItem", "test");
   }
 });

@@ -1,4 +1,3 @@
-import { AuthorizationServiceConfig } from "../src/interfaces/auth";
 import {
   testMethodStubs,
   userMethodsConfig,

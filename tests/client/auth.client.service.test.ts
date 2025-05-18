@@ -26,10 +26,11 @@ describe("API Client Autorization Service", () => {
       },
     });
 
-    setup.clientService.setStorageType({
-      localStorage: "localStorage",
-    });
-    storage = setup.clientService.getStorage("localStorage");
+    storage = setup.clientService.createStorages({
+      localStorage: {
+        type: "localStorage"
+      }
+    }).localStorage;
   });
 
   afterEach(() => {
@@ -103,8 +104,8 @@ describe("API Client Autorization Service", () => {
     setup.clientService.auth
       .login(config)
       .then(function (result) {
-        expect(storage?.get("accessToken")).toBe(result.data.access_token);
-        expect(storage?.get("refreshToken")).toBe(result.data.refresh_token);
+        expect(storage.get("accessToken")).toBe(result.data.access_token);
+        expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
         // console.log(result.data);
       });
   });
@@ -127,8 +128,8 @@ describe("API Client Autorization Service", () => {
     setup.clientService.auth
       .refreshToken(config)
       .then(function (result) {
-        expect(storage?.get("accessToken")).toBe(result.data.access_token);
-        expect(storage?.get("refreshToken")).toBe(result.data.refresh_token);
+        expect(storage.get("accessToken")).toBe(result.data.access_token);
+        expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
       });
   });
 
@@ -141,9 +142,9 @@ describe("API Client Autorization Service", () => {
 
     setup.clientService.auth
       .logout(config)
-      .then(function (result) {
-        expect(storage?.get("accessToken")).toBeNull();
-        expect(storage?.get("refreshToken")).toBeNull();
+      .then(function () {
+        expect(storage.get("accessToken")).toBeNull();
+        expect(storage.get("refreshToken")).toBeNull();
       });
   });
 
