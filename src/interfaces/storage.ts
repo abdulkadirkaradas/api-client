@@ -7,10 +7,9 @@ export interface IStorage {
   clear(): void;
 }
 
-interface ClientServiceStorageTypes {
-  type: StorageType;
-  storage?: IStorage;
-}
 export interface ClientServiceStorageConfig {
-  [key: string]: ClientServiceStorageTypes
+  [key: string]: {
+    type: StorageType;
+    storage?: IStorage;
+  };
 }
