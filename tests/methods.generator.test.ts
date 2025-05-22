@@ -36,9 +36,6 @@ describe("API Client Method Generator", () => {
         expect(result.data.name).toBe("string");
         expect(result.data.slug).toBe("string");
         expect(result.data.image).toBe("string");
-      })
-      .catch(function (result: any) {
-        console.error(result);
       });
   });
 
@@ -54,9 +51,6 @@ describe("API Client Method Generator", () => {
         expect(result.data.password).toBe("string");
         expect(result.data.avatar).toBe("string");
         expect(result.data.role).toBe("string");
-      })
-      .catch(function (result: any) {
-        console.error(result);
       });
   });
 
@@ -72,9 +66,6 @@ describe("API Client Method Generator", () => {
         expect(result.data.password).toBe("string");
         expect(result.data.avatar).toBe("string");
         expect(result.data.role).toBe("string");
-      })
-      .catch(function (result: any) {
-        console.error(result);
       });
   });
 
@@ -85,9 +76,6 @@ describe("API Client Method Generator", () => {
       .deleteProduct()
       .then(function (result: any) {
         expect(result.data).toEqual({});
-      })
-      .catch(function (result: any) {
-        console.error(result);
       });
   });
 

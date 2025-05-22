@@ -81,7 +81,6 @@ describe("API Client Autorization Service", () => {
         expect(result.data.name).toBe("string");
         expect(result.data.avatar).toBe("string");
         expect(result.data.role).toBe("string");
-        // console.log(result.data);
       });
   });
 
@@ -106,7 +105,6 @@ describe("API Client Autorization Service", () => {
       .then(function (result) {
         expect(storage.get("accessToken")).toBe(result.data.access_token);
         expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
-        // console.log(result.data);
       });
   });
 

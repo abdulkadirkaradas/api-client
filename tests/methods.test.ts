@@ -33,10 +33,6 @@ describe('API Client Methods', () => {
         expect(result.data.name).toBe('string');
         expect(result.data.slub).toBe('string');
         expect(result.data.image).toBe('string');
-        // console.log(result.data);
-      })
-      .catch(function (result) {
-        console.error(result);
       });
   });
 
@@ -65,10 +61,6 @@ describe('API Client Methods', () => {
         expect(result.data.name).toBe('string');
         expect(result.data.slub).toBe('string');
         expect(result.data.image).toBe('string');
-        // console.log(result.data);
-      })
-      .catch(function (result) {
-        console.error(result);
       });
   });
 
@@ -97,10 +89,6 @@ describe('API Client Methods', () => {
         expect(result.data.name).toBe('string');
         expect(result.data.slub).toBe('string');
         expect(result.data.image).toBe('string');
-        // console.log(result);
-      })
-      .catch(function (result) {
-        console.error(result);
       });
   });
 
@@ -115,14 +103,6 @@ describe('API Client Methods', () => {
       .delete(config.url, config.config)
       .then(function (result) {
         expect(result.data).toBe(true);
-        // console.log(result);
-      })
-      .catch(function (result) {
-        console.error(result);
       });
   });
 });
-
-//TODO These methods will be tested when proper mock apis founded
-// it('Is PATCH method works', () => {});
-// it('Is HEAD method works', () => {});

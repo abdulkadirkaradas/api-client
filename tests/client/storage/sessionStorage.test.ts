@@ -49,9 +49,6 @@ describe("API Client Storage/SessionStorage servie", () => {
       .then(function (result) {
         expect(storage.get("accessToken")).toBe(result.data.access_token);
         expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
-      })
-      .catch(function (result) {
-        console.error(result);
       });
   });
 
