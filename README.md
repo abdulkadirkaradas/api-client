@@ -81,7 +81,7 @@ The API Client `instance` provides certain features for use with the API Client.
 - **Authorization & Storage Service**: See [src/core/services/client/README.md](src/core/services/client/README.md)
 - **Interceptors**: See [src/interceptors/README.md](src/interceptors/README.md)
 - **Method Generator**: See [src/methods/README.md](src/methods/README.md)
-- **Storage Helpers**: See [src/utils/storage/client/README.md](src/utils/storage/client/README.md)
+- **StorageService**: See [src/utils/storage/client/README.md](src/utils/storage/client/README.md)
 - **EventBus**: See [src/utils/eventBus/README.md](src/utils/eventBus/README.md)
 
 Each folder contains a detailed, clear README with usage and examples for that feature.
