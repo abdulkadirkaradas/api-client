@@ -63,19 +63,9 @@ export class ClientServices {
    * This method ensures that each storage key is associated with a valid storage instance.
    */
   private generateStorage() {
-    // Helper function to update the `storages` object with new storage instances.
-    const setStorage = (storage: ClientServiceStorageConfig) => {
-      this.storages = { ...this.storages, ...storage };
-    };
-
-    // Iterate over each storage type configuration
     for (const key in this.storages) {
-      // Get the storage type for the current key
-      let property = this.storages[key];
-
-      // Create a storage instance using the storage service
+      const property = this.storages[key];
       const storage = this.storageService.createStorage(
-        // Use the default storage type if none is specified
         property.type || this.defaultStorageType
       );
 
@@ -84,19 +74,11 @@ export class ClientServices {
           `Failed to get storage service for type: ${property.type}`
         );
       }
-
-      // If a storage instance already exists for the key, remove it
-      if (this.storages[key]) {
-        // Remove the existing storage instance
-        delete this.storages[key];
-      }
-
-      setStorage({
-        [key]: {
-          type: property.type,
-          storage: storage as IStorage,
-        },
-      });
+      
+      this.storages[key] = {
+        type: property.type,
+        storage: storage as IStorage,
+      };
     }
   }
 }
