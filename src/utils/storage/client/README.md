@@ -13,7 +13,7 @@ import { ClientStorageService } from "moodo";
 
 const storageService = new ClientStorageService();
 
-const storage = storageService.createStorage("localStorage");
+const storage = storageService.createStorage("web", "localStorage");
 
 storage.set("key", "value");
 const value = storage.get("key");

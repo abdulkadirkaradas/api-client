@@ -4,7 +4,7 @@ import { IServiceConstructor } from "../../../interfaces/service";
 import {
   ClientServiceStorageConfig,
   IStorage,
-  StorageType,
+  WebStorageType,
 } from "../../../interfaces/storage";
 
 /**
@@ -25,7 +25,7 @@ export class ClientServices {
   private storages: ClientServiceStorageConfig = {};
 
   // Default storage type to be used if none is specified
-  private readonly defaultStorageType: StorageType = "localStorage";
+  private readonly defaultStorageType: WebStorageType = "localStorage";
 
   /**
    * Constructor for the `ClientServices` class.

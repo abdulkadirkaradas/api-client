@@ -1,9 +1,9 @@
 import { AuthProtocolConfig } from '../../../interfaces/core';
 import { AxiosResponse } from 'axios';
-import { ClientStorageFactory } from '../../../utils/storage/client/storageFactory';
+import { StorageFactory } from '../../../utils/storage/storageFactory';
 import { EventBus } from '../../../utils/eventBus/EventBus';
 import { IServiceConstructor } from '../../../interfaces/service';
-import { IStorage, StorageType } from '../../../interfaces/storage';
+import { IStorage, WebStorageType } from '../../../interfaces/storage';
 import { Methods } from '../../../methods/methods';
 import {
   AuthorizationServiceConfig,
@@ -31,7 +31,7 @@ export class AuthorizationService {
   private authProtocolConfig: AuthProtocolConfig;
 
   // Factory for creating storage instances
-  private storageFactory: ClientStorageFactory;
+  private storageFactory: StorageFactory;
 
   // Configuration for tokens
   private tokenConfig: AuthorizationTokenConfig = {};
@@ -52,7 +52,7 @@ export class AuthorizationService {
     this.eventBus = config.eventBus; // Initialize the event bus
     this.authProtocolConfig = config.authProtocol; // Set authentication protocol configuration
     this.methods = new Methods(config.client); // Initialize HTTP methods wrapper
-    this.storageFactory = new ClientStorageFactory(); // Create a storage factory instance
+    this.storageFactory = new StorageFactory(); // Create a storage factory instance
 
     this.setTokenConfig(config.tokenConfig || {}); // Set initial token configuration
   }
@@ -95,7 +95,7 @@ export class AuthorizationService {
    */
   protected createStorage(config: AuthorizationTokenConfig): void {
     // Supported storage types
-    const storageTypes: StorageType[] = [
+    const storageTypes: WebStorageType[] = [
       "localStorage",
       "sessionStorage",
       "cookie",
@@ -103,11 +103,11 @@ export class AuthorizationService {
 
     // Helper function to create storage for a specific token type
     const createTokenStorage = (
-      type: StorageType | null | undefined,
+      type: WebStorageType | null | undefined,
       tokenName: "accessToken" | "refreshToken"
     ) => {
       if (type && storageTypes.includes(type)) {
-        this.tokenStorage[tokenName] = this.storageFactory.createStorage(type);
+        this.tokenStorage[tokenName] = this.storageFactory.createStorage("web", type);
       }
     };
 
