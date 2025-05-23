@@ -2,7 +2,7 @@ import { TestSetup } from "../../utils/testSetup";
 import { IStorage } from "../../../src/interfaces/storage";
 import * as path from 'path';
 
-describe("API Client Storage/CookieStorage servie", () => {
+describe("API Client Storage/FileStorage service", () => {
   let setup: TestSetup;
   let storage: IStorage;
 
@@ -10,7 +10,7 @@ describe("API Client Storage/CookieStorage servie", () => {
     setup = new TestSetup();
     jest.clearAllMocks();
 
-    storage = setup.storage.createStorage("node", "fileStorage");
+    storage = setup.storage.createStorage("node", "file");
     storage.load?.(path.resolve(__dirname, "./utils/storage.json"));
   });
 

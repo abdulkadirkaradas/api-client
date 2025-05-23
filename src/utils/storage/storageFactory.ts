@@ -1,8 +1,8 @@
-import { CookieStorage } from './client/cookieStorage';
-import { FileStorage } from './server/fileStorage';
-import { LocalStorage } from './client/localStorage';
-import { MemoryStorage } from './server/memoryStorage';
-import { SessionStorage } from './client/sessionStorage';
+import { CookieStorage } from "./client/cookieStorage";
+import { FileStorage } from "./server/fileStorage";
+import { LocalStorage } from "./client/localStorage";
+import { MemoryStorage } from "./server/memoryStorage";
+import { SessionStorage } from "./client/sessionStorage";
 import {
   IStorage,
   NodeStorageType,
@@ -48,7 +48,7 @@ export class StorageFactory {
       : this.getNodeStorage(storage as NodeStorageType);
   }
 
-  private getWebStorage(type: WebStorageType): IStorage { 
+  private getWebStorage(type: WebStorageType): IStorage {
     switch (type) {
       case "localStorage":
         return new LocalStorage();
@@ -62,9 +62,9 @@ export class StorageFactory {
   }
 
   private getNodeStorage(type: NodeStorageType): IStorage {
-    if (type === "memoryStorage") {
+    if (type === "memory") {
       return new MemoryStorage();
-    } else if (type === "fileStorage") {
+    } else if (type === "file") {
       return new FileStorage();
     }
     throw new Error("Unsupported node storage type");
