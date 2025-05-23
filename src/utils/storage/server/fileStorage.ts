@@ -2,6 +2,10 @@ import * as fs from "fs";
 import { IStorage } from "../../../interfaces/storage";
 import path from "path";
 
+/**
+ * FileStorage class implements the IStorage interface for file-based storage.
+ * It provides methods to load, set, get, remove, and clear data from a JSON file.
+ */
 export class FileStorage implements IStorage {
   private filePath: string = "";
   private data: Record<string, string> = {};
