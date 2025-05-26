@@ -7,7 +7,9 @@ import {
   IStorage,
   NodeStorageType,
   WebStorageType,
-} from "../../interfaces/storage";
+} from "../../interfaces/storages/storage";
+import { RedisStorage } from "./server/redisStorage";
+import { IRedisStorage } from "../../interfaces/storages/redis";
 
 type StorageType = "node" | "web";
 type StorageForType<T extends StorageType> = T extends "node"
@@ -46,6 +48,16 @@ export class StorageFactory {
     return type === "web"
       ? this.getWebStorage(storage as WebStorageType)
       : this.getNodeStorage(storage as NodeStorageType);
+  }
+
+  /**
+   * Creates a Redis storage instance.
+   * This method is specifically for creating storage that implements the IRedisStorage interface.
+   *
+   * @returns {IRedisStorage} - An instance of RedisStorage.
+   */
+  public createRedisStorage(): IRedisStorage {
+    return new RedisStorage();
   }
 
   private getWebStorage(type: WebStorageType): IStorage {
