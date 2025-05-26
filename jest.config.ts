@@ -1,4 +1,6 @@
-module.exports = {
+import type { Config } from "jest";
+
+const config: Config = {
   testEnvironment: "jsdom",
   testMatch: ["**/tests/**/**/*.test.ts"],
   transform: {
@@ -8,3 +10,5 @@ module.exports = {
   setupFilesAfterEnv: ["jest-localstorage-mock"],
   testPathIgnorePatterns: ["/src"],
 };
+
+export default config;
