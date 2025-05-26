@@ -26,57 +26,45 @@ describe("API Client Method Generator", () => {
     expect(generatedMethods).toHaveProperty("deleteProduct");
   });
 
-  it("should successfully fetch categories", () => {
+  it("should successfully fetch categories", async () => {
     setup.mock.onGet("/categories/1").reply(200, testMethodStubs.get);
 
-    generatedMethods
-      .fetchCategories()
-      .then(function (result: any) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.name).toBe("string");
-        expect(result.data.slug).toBe("string");
-        expect(result.data.image).toBe("string");
-      });
+    const result = await generatedMethods.fetchCategories();
+    expect(result.data.id).toBe(1);
+    expect(result.data.name).toBe("string");
+    expect(result.data.slug).toBe("string");
+    expect(result.data.image).toBe("string");
   });
 
-  it("should successfully create a user", () => {
+  it("should successfully create a user", async () => {
     setup.mock.onPost("/users/").reply(200, testMethodStubs.post);
 
-    generatedMethods
-      .createUser()
-      .then(function (result: any) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.name).toBe("string");
-        expect(result.data.email).toBe("string");
-        expect(result.data.password).toBe("string");
-        expect(result.data.avatar).toBe("string");
-        expect(result.data.role).toBe("string");
-      });
+    const result = await generatedMethods.createUser();
+    expect(result.data.id).toBe(1);
+    expect(result.data.name).toBe("string");
+    expect(result.data.email).toBe("string");
+    expect(result.data.password).toBe("string");
+    expect(result.data.avatar).toBe("string");
+    expect(result.data.role).toBe("string");
   });
 
-  it("should successfully update a user", () => {
+  it("should successfully update a user", async () => {
     setup.mock.onPut("/users/1").reply(200, testMethodStubs.put);
 
-    generatedMethods
-      .updateUser()
-      .then(function (result: any) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.name).toBe("string");
-        expect(result.data.email).toBe("string");
-        expect(result.data.password).toBe("string");
-        expect(result.data.avatar).toBe("string");
-        expect(result.data.role).toBe("string");
-      });
+    const result = await generatedMethods.updateUser();
+    expect(result.data.id).toBe(1);
+    expect(result.data.name).toBe("string");
+    expect(result.data.email).toBe("string");
+    expect(result.data.password).toBe("string");
+    expect(result.data.avatar).toBe("string");
+    expect(result.data.role).toBe("string");
   });
 
-  it("should successfully delete a product", () => {
+  it("should successfully delete a product", async () => {
     setup.mock.onDelete("/products/1").reply(200, {});
 
-    generatedMethods
-      .deleteProduct()
-      .then(function (result: any) {
-        expect(result.data).toEqual({});
-      });
+    const result = await generatedMethods.deleteProduct();
+    expect(result.data).toEqual({});
   });
 
   it("should throw an error when duplicate method names are bound", () => {

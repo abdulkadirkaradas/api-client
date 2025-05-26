@@ -12,7 +12,7 @@ describe('API Client Methods', () => {
     setup.mock.restore();
   });
 
-  it('should handle GET requests correctly', () => {
+  it('should handle GET requests correctly', async () => {
     let getMethodStub: Object = {
       id: 1,
       name: 'string',
@@ -26,17 +26,14 @@ describe('API Client Methods', () => {
 
     setup.mock.onGet(config.url).reply(200, getMethodStub);
 
-    setup.instance.methods
-      .get(config.url, config.config)
-      .then(function (result) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.name).toBe('string');
-        expect(result.data.slub).toBe('string');
-        expect(result.data.image).toBe('string');
-      });
+    const result = await setup.instance.methods.get(config.url, config.config);
+    expect(result.data.id).toBe(1);
+    expect(result.data.name).toBe('string');
+    expect(result.data.slub).toBe('string');
+    expect(result.data.image).toBe('string');
   });
 
-  it('should handle POST requests correctly', () => {
+  it('should handle POST requests correctly', async () => {
     let postMethodStub: Object = {
       id: 1,
       name: 'string',
@@ -54,17 +51,14 @@ describe('API Client Methods', () => {
 
     setup.mock.onPost(config.url).reply(200, postMethodStub);
 
-    setup.instance.methods
-      .post(config.url, config.data, config.config)
-      .then(function (result) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.name).toBe('string');
-        expect(result.data.slub).toBe('string');
-        expect(result.data.image).toBe('string');
-      });
+    const result = await setup.instance.methods.post(config.url, config.data, config.config);
+    expect(result.data.id).toBe(1);
+    expect(result.data.name).toBe('string');
+    expect(result.data.slub).toBe('string');
+    expect(result.data.image).toBe('string');
   });
 
-  it('should handle PUT requests correctly', () => {
+  it('should handle PUT requests correctly', async () => {
     let putMethodStub: Object = {
       id: 1,
       name: 'string',
@@ -82,27 +76,21 @@ describe('API Client Methods', () => {
 
     setup.mock.onPut(config.url).reply(200, putMethodStub);
 
-    setup.instance.methods
-      .put(config.url, config.data, config.config)
-      .then(function (result) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.name).toBe('string');
-        expect(result.data.slub).toBe('string');
-        expect(result.data.image).toBe('string');
-      });
+    const result = await setup.instance.methods.put(config.url, config.data, config.config);
+    expect(result.data.id).toBe(1);
+    expect(result.data.name).toBe('string');
+    expect(result.data.slub).toBe('string');
+    expect(result.data.image).toBe('string');
   });
 
-  it('should handle DELETE requests correctly', () => {
+  it('should handle DELETE requests correctly', async () => {
     let config: AuthorizationServiceConfig = {
       url: '/products/1',
     };
 
     setup.mock.onDelete(config.url).reply(200, true);
 
-    setup.instance.methods
-      .delete(config.url, config.config)
-      .then(function (result) {
-        expect(result.data).toBe(true);
-      });
+    const result = await setup.instance.methods.delete(config.url, config.config);
+    expect(result.data).toBe(true);
   });
 });

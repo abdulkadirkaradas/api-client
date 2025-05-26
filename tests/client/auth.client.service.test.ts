@@ -50,7 +50,7 @@ describe("API Client Autorization Service", () => {
     expect(setup.clientService.auth.getTokenConfig()).toMatchObject(tokenConfig);
   });
 
-  it("should handle user registration service successfully", () => {
+  it("should handle user registration service successfully", async () => {
     let registerStub: {} = {
       id: 1,
       email: "string",
@@ -72,19 +72,16 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200, registerStub);
 
-    setup.clientService.auth
-      .register(config)
-      .then(function (result) {
-        expect(result.data.id).toBe(1);
-        expect(result.data.email).toBe("string");
-        expect(result.data.password).toBe("string");
-        expect(result.data.name).toBe("string");
-        expect(result.data.avatar).toBe("string");
-        expect(result.data.role).toBe("string");
-      });
+    const result = await setup.clientService.auth.register(config);
+    expect(result.data.id).toBe(1);
+    expect(result.data.email).toBe("string");
+    expect(result.data.password).toBe("string");
+    expect(result.data.name).toBe("string");
+    expect(result.data.avatar).toBe("string");
+    expect(result.data.role).toBe("string");
   });
 
-  it("should handle user login service successfully", () => {
+  it("should handle user login service successfully", async () => {
     let loginStub: {} = {
       access_token: "string",
       refresh_token: "string",
@@ -100,15 +97,12 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200, loginStub);
 
-    setup.clientService.auth
-      .login(config)
-      .then(function (result) {
-        expect(storage.get("accessToken")).toBe(result.data.access_token);
-        expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
-      });
+    const result = await setup.clientService.auth.login(config);
+    expect(storage.get("accessToken")).toBe(result.data.access_token);
+    expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
   });
 
-  it("should handle refresh token service successfully", () => {
+  it("should handle refresh token service successfully", async () => {
     let resfreshTokenStub: Object = {
       access_token: "string",
       refresh_token: "string",
@@ -123,30 +117,24 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200, resfreshTokenStub);
 
-    setup.clientService.auth
-      .refreshToken(config)
-      .then(function (result) {
-        expect(storage.get("accessToken")).toBe(result.data.access_token);
-        expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
-      });
+    const result = await setup.clientService.auth.refreshToken(config);
+    expect(storage.get("accessToken")).toBe(result.data.access_token);
+    expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
   });
 
-  it("should handle user logout service successfully", () => {
+  it("should handle user logout service successfully", async () => {
     let config: AuthorizationServiceConfig = {
       url: "/auth/logout",
     };
 
     setup.mock.onPost(config.url).reply(200);
 
-    setup.clientService.auth
-      .logout(config)
-      .then(function () {
-        expect(storage.get("accessToken")).toBeNull();
-        expect(storage.get("refreshToken")).toBeNull();
-      });
+    await setup.clientService.auth.logout(config);
+    expect(storage.get("accessToken")).toBeNull();
+    expect(storage.get("refreshToken")).toBeNull();
   });
 
-  it("should handle 401 error for login service", () => {
+  it("should handle 401 error for login service", async () => {
     let loginStub: Object = {
       message: "string",
       statusCode: 401,
@@ -161,13 +149,15 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, loginStub);
 
-    setup.clientService.auth.login(config).catch(function (error) {
+    try {
+      await setup.clientService.auth.login(config);
+    } catch (error: any) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(loginStub);
-    });
+    }
   });
 
-  it("should handle 401 error for register service", () => {
+  it("should handle 401 error for register service", async () => {
     let registerStub: Object = {
       message: "string",
       statusCode: 401,
@@ -185,13 +175,15 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, registerStub);
 
-    setup.clientService.auth.register(config).catch(function (error) {
+    try {
+      await setup.clientService.auth.register(config);
+    } catch (error: any) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(registerStub);
-    });
+    }
   });
 
-  it("should handle 401 error for refresh token service", () => {
+  it("should handle 401 error for refresh token service", async () => {
     let resfreshTokenStub: Object = {
       message: "string",
       statusCode: 401,
@@ -206,9 +198,11 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(401, resfreshTokenStub);
 
-    setup.clientService.auth.refreshToken(config).catch(function (error) {
+    try {
+      await setup.clientService.auth.refreshToken(config);
+    } catch (error: any) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(resfreshTokenStub);
-    });
+    }
   });
 });
