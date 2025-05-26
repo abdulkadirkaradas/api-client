@@ -130,5 +130,5 @@ storage.clear();
 - The `AuthorizationService` methods require the 'tokenConfig' property to be provided in order to manage token operations. This property can be provided directly when creating the API Client instance initially, or it can be provided with `setTokenConfig()` function of service. If it is not provided, the service cannot manage token operations and will only make calls and return responses.
 - The `AuthorizationService` is not directly accessible from the API Client instance. It is abstracted and can be accessed through the `Services` facade.
 - For type definitions, see:
-    - [WebStorageType](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/interfaces/storage.ts#L1)
+    - [WebStorageType](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/interfaces/storages/storage.ts#L1)
     - [AuthorizationServiceConfig](https://github.com/abdulkadirkaradas/api-client/blob/develop/src/interfaces/auth.ts#L5)
