@@ -1,22 +1,26 @@
-# StorageService
+# Client Storage
 
-The `StorageService` facade provides built-in local, session, and cookie storage management. This allows you to easily manage data in the browser's storage.
+This module provides utilities for managing browser storage, including localStorage, sessionStorage, and cookieStorage. These utilities allow you to store, retrieve, remove, and clear data in the browser's storage.
 
-> [!note]
->
-> For checking types and interfaces, please refer to the following files:
-> <br>
-> See; [StorageType](https://github.com/abdulkadirkaradas/api-client/blob/develop/src/interfaces/storage.ts#L1)
+## Supported Storage Types
 
-```typescript
-import { ClientStorageService } from "moodo";
+- **localStorage**: Persistent data storage. Data remains after the browser is closed.
+- **sessionStorage**: Temporary data storage. Data is cleared when the tab or browser is closed.
+- **cookieStorage**: Data storage using cookies. Suitable for small and short-lived data.
 
-const storageService = new ClientStorageService();
+## Usage
 
-const storage = storageService.createStorage("web", "localStorage");
+For usage details and examples, please refer to the documentations below;
+- [`src/core/services/client/README.md`](https://github.com/abdulkadirkaradas/moodo/tree/develop/src/core/services/client#%EF%B8%8F-storage-management).
+- [`Client storage tests`](https://github.com/abdulkadirkaradas/moodo/tree/develop/tests/client/storage)
+    - [`Test Setup`](https://github.com/abdulkadirkaradas/moodo/blob/develop/tests/utils/testSetup.ts)
 
-storage.set("key", "value");
-const value = storage.get("key");
-storage.remove("key");
-storage.clear();
-```
+
+## Notes
+
+- All storage types share a similar API.
+- For types and interfaces, see:
+  - [StorageType](https://github.com/abdulkadirkaradas/api-client/blob/develop/src/interfaces/storages/storage.ts#L1)
+
+---
+For more information, refer to the main documentation or the relevant interface files.
