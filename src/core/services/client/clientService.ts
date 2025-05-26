@@ -1,11 +1,11 @@
 import { AuthorizationService as WebAuthorizationService } from "../client/authorization";
-import { ClientStorageService } from "./storageService";
 import { IServiceConstructor } from "../../../interfaces/service";
 import {
   ClientServiceStorageConfig,
   IStorage,
   WebStorageType,
 } from "../../../interfaces/storages/storage";
+import { StorageFactory } from "../../../utils/storage/storageFactory";
 
 /**
  * The `ClientServices` class is a service class used to manage authorization and storage services on the client side.
@@ -19,7 +19,7 @@ export class ClientServices {
   public auth: WebAuthorizationService;
 
   // Private instance of the ClientStorageService for managing storage
-  private storageService: ClientStorageService;
+  private storageFactory: StorageFactory;
 
   // Object to hold custom storage configurations
   private storages: ClientServiceStorageConfig = {};
@@ -33,7 +33,7 @@ export class ClientServices {
    * @param config - Configuration object for initializing the services.
    */
   constructor(config: IServiceConstructor) {
-    this.storageService = new ClientStorageService();
+    this.storageFactory = new StorageFactory();
     this.auth = new WebAuthorizationService({
       client: config.client,
       eventBus: config.eventBus,
@@ -65,9 +65,7 @@ export class ClientServices {
   private generateStorage() {
     for (const key in this.storages) {
       const property = this.storages[key];
-      const storage = this.storageService.createStorage(
-        property.type || this.defaultStorageType
-      );
+      const storage = this.storageFactory.createStorage("web", property.type || this.defaultStorageType as WebStorageType);
 
       if (!storage) {
         throw new Error(
