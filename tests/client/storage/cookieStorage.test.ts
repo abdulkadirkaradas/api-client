@@ -1,8 +1,8 @@
 import "jest-localstorage-mock";
 import { TestSetup } from "../../utils/testSetup";
-import { IStorage } from "../../../src/interfaces/storage";
+import { IStorage } from "../../../src/interfaces/storages/storage";
 
-describe("API Client Storage/CookieStorage servie", () => {
+describe("API Client Storage/CookieStorage service", () => {
   let setup: TestSetup;
   let storage: IStorage | any;
 

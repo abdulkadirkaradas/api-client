@@ -4,7 +4,7 @@ import {
   AuthorizationServiceConfig,
   AuthorizationTokenConfig,
 } from "../../src/interfaces/auth";
-import { IStorage } from "../../src/interfaces/storage";
+import { IStorage } from "../../src/interfaces/storages/storage";
 
 describe("API Client Autorization Service", () => {
   let setup: TestSetup;

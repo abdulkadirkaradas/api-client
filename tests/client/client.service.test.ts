@@ -1,6 +1,6 @@
 import "jest-localstorage-mock";
 import { TestSetup } from "../utils/testSetup";
-import { ClientServiceStorageConfig } from "../../src/interfaces/storage";
+import { ClientServiceStorageConfig } from "../../src/interfaces/storages/storage";
 import { ClientServices } from "../../src/core/services/client/clientService";
 
 describe("API Client Autorization Service", () => {
