@@ -47,7 +47,7 @@ The basic configuration settings and a usage example are as follows:
 > The `authProtocol` property is required. This property essentially determines whether the `Authorization Service` will process `access` and `refresh` tokens. The `authProtocol` property has two sub-properties, namely `useAuthProtocol` and `useOAUTHProtocol`. The `useAuthProtocol` property specifies whether authorization operations will return any token (JWT Token, OAUTH Token, etc.). `useOAUTHProtocol` specifies whether it will return a refresh token.
 
 > [!warning]
-> 
+>
 > If `authProtocol` property is not configured correctly, tokens will not be stored and used properly!
 
 ```typescript
@@ -77,11 +77,11 @@ The API Client `instance` provides certain features for use with the API Client.
 
 ## Features & Documentation
 
-- **API Client**: See [src/core/README.md](src/core/README.md)
-- **Authorization & Storage Service**: See [src/core/services/client/README.md](src/core/services/client/README.md)
-- **Interceptors**: See [src/interceptors/README.md](src/interceptors/README.md)
-- **Method Generator**: See [src/methods/README.md](src/methods/README.md)
-- **StorageService**: See [src/utils/storage/client/README.md](src/utils/storage/client/README.md)
-- **EventBus**: See [src/utils/eventBus/README.md](src/utils/eventBus/README.md)
+- **API Client**: See [src/core/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/core/README.md)
+- **Authorization & Storage Service**: See [src/core/services/client/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/core/services/client/README.md)
+- **Interceptors**: See [src/interceptors/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/interceptors/README.md)
+- **Method Generator**: See [src/methods/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/methods/README.md)
+- **StorageService**: See [src/utils/storage/client/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/utils/storage/client/README.md)
+- **EventBus**: See [src/utils/eventBus/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/utils/eventBus/README.md)
 
 Each folder contains a detailed, clear README with usage and examples for that feature.
