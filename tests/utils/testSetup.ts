@@ -1,11 +1,11 @@
 import MockAdapter from 'axios-mock-adapter';
+import moodo from '../../src/index';
 import { APIClient } from '../../src/core/apiClient';
 import { APIClientConfig } from '../../src/interfaces/core';
 import { ClientServices } from '../../src/core/services/client/clientService';
-import { StorageFactory } from '../../src/utils/storage/storageFactory';
-import { moodo } from '../../src/index';
 import { EventBus } from '../../src/utils/eventBus/EventBus';
 import { MethodGenerator } from '../../src/methods/generator';
+import { StorageFactory } from '../../src/utils/storage/storageFactory';
 
 export class TestSetup {
   public config: APIClientConfig;
@@ -33,7 +33,7 @@ export class TestSetup {
     this.eventBus = create.EventBus;
     this.methodGenerator = create.MethodGenerator;
     this.clientService = create.Services.client;
-    this.storage = create.Storage;
+    this.storage = create.StorageFactory;
     this.mock = new MockAdapter(this.instance.getInstance());
   }
 

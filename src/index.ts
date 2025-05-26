@@ -1,11 +1,11 @@
 import { APIClient } from "./core/apiClient";
 import { ClientServices } from "./core/services/client/clientService";
 import { APIClientConfig } from "./interfaces/core";
-import { StorageFactory } from "./utils/storage/storageFactory";
+import { StorageFactory as BaseStorageFactory } from "./utils/storage/storageFactory";
 import { MethodGenerator as Generator } from './methods/generator';
 import { EventBus as EventBusClass } from './utils/eventBus/EventBus';
 
-export const moodo = (config: APIClientConfig) => {
+const moodo = (config: APIClientConfig) => {
   const ApiClient = new APIClient(config);
   const EventBus = new EventBusClass();
   const MethodGenerator = new Generator(ApiClient.getInstance());
@@ -17,13 +17,15 @@ export const moodo = (config: APIClientConfig) => {
       tokenConfig: config.tokenConfig || {},
     }),
   };
-  const Storage = new StorageFactory();
+  const StorageFactory = new BaseStorageFactory();
 
   return {
     ApiClient,
     EventBus,
     MethodGenerator,
     Services,
-    Storage,
+    StorageFactory,
   };
 };
+
+export default moodo;
