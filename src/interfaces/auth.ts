@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { StorageType } from "./storage";
+import { WebStorageType } from "./storages/storage";
 import { APIClientConfig } from "./core";
 
 export interface AuthorizationServiceConfig {
@@ -16,7 +16,7 @@ export interface AuthorizationTokenConfig {
     refreshTokenName?: string | null;
   };
   tokenStorageType?: {
-    accessToken?: StorageType | null;
-    refreshToken?: StorageType | null;
+    accessToken?: WebStorageType | null;
+    refreshToken?: WebStorageType | null;
   };
 }

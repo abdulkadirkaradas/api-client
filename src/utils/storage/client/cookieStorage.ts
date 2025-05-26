@@ -1,4 +1,4 @@
-import { IStorage } from "../../../interfaces/storage";
+import { IStorage } from "../../../interfaces/storages/storage";
 
 /**
  * CookieStorage is a utility class for managing cookies in the browser.

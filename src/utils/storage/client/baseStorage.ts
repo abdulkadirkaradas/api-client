@@ -1,4 +1,4 @@
-import { IStorage } from "../../../interfaces/storage";
+import { IStorage } from "../../../interfaces/storages/storage";
 
 /**
  * BaseStorage provides a template for browser storage implementations.

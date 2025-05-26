@@ -1,4 +1,4 @@
-export type NodeStorageType = "memoryStorage" | "fileStorage";
+export type NodeStorageType = "memory" | "file" | "redis";
 export type WebStorageType = "localStorage" | "sessionStorage" | "cookie";
 
 export interface IStorage {

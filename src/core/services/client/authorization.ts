@@ -3,7 +3,7 @@ import { AxiosResponse } from 'axios';
 import { StorageFactory } from '../../../utils/storage/storageFactory';
 import { EventBus } from '../../../utils/eventBus/EventBus';
 import { IServiceConstructor } from '../../../interfaces/service';
-import { IStorage, WebStorageType } from '../../../interfaces/storage';
+import { IStorage, WebStorageType } from '../../../interfaces/storages/storage';
 import { Methods } from '../../../methods/methods';
 import {
   AuthorizationServiceConfig,

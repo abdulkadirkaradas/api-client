@@ -1,6 +1,6 @@
 import { EventBus } from "../utils/eventBus/EventBus";
 import { InterceptorConstructor } from "./interceptorConstructor";
-import { IStorage } from "../interfaces/storage";
+import { IStorage } from "../interfaces/storages/storage";
 import {
   AxiosHeaders,
   InternalAxiosRequestConfig,

@@ -5,7 +5,7 @@ import {
   ClientServiceStorageConfig,
   IStorage,
   WebStorageType,
-} from "../../../interfaces/storage";
+} from "../../../interfaces/storages/storage";
 
 /**
  * The `ClientServices` class is a service class used to manage authorization and storage services on the client side.

@@ -1,4 +1,4 @@
-import { IStorage } from "../../../interfaces/storage";
+import { IStorage } from "../../../interfaces/storages/storage";
 
 /**
  * MemoryStorage is a simple in-memory storage for Node.js environments.

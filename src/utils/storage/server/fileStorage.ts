@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { IStorage } from "../../../interfaces/storage";
+import { IStorage } from "../../../interfaces/storages/storage";
 import path from "path";
 
 /**

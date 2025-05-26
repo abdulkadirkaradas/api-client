@@ -1,4 +1,4 @@
-import { IStorage, WebStorageType } from "../../../interfaces/storage";
+import { IStorage, WebStorageType } from "../../../interfaces/storages/storage";
 import { StorageFactory } from "../../../utils/storage/storageFactory";
 
 /**

@@ -1,7 +1,7 @@
 import { AuthorizationTokenConfig } from "./auth";
 import { AxiosInstance, RawAxiosRequestHeaders } from "axios";
 import { EventBus } from "../utils/eventBus/EventBus";
-import { IStorage } from "./storage";
+import { IStorage } from "./storages/storage";
 import { AuthProtocolConfig } from "./core";
 
 export type CommonRequestHeadersList =
