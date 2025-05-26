@@ -1,5 +1,5 @@
 import { TestSetup } from "../../utils/testSetup";
-import { IStorage } from "../../../src/interfaces/storage";
+import { IStorage } from "../../../src/interfaces/storages/storage";
 import * as path from 'path';
 
 describe("API Client Storage/FileStorage service", () => {
