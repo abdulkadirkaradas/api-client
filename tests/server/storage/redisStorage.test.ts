@@ -75,6 +75,24 @@ describe("API Client Storage/RedisStorage operations", () => {
     expect(z1).toEqual(["a", "1", "b", "2"]);
   });
 
+  it("Should check key exists", async () => {
+    await storage.set("string", { [prefix + ":exists"]: "test" });
+    const exists = await storage.exists("exists");
+    expect(exists).toBe(true);
+  });
+
+  it("Should expire key", async () => {
+    await storage.set("string", { [prefix + ":expire"]: "test" });
+    await storage.expire("expire", 1);
+    const existsBefore = await storage.exists("expire");
+    expect(existsBefore).toBe(true);
+    
+    // Wait for expiration
+    await new Promise((res) => setTimeout(res, 1100));
+    const existsAfter = await storage.exists("expire");
+    expect(existsAfter).toBe(false);
+  })
+
   it("Should remove data", async () => {
     await storage.set("string", { [prefix + ":strremove"]: "toremove" });
     await storage.remove("strremove");
