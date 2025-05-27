@@ -1,4 +1,4 @@
-import { Redis } from "ioredis";
+import { Callback, Redis } from "ioredis";
 import {
   IRedisStorage,
   RedisOperationByType,
@@ -110,6 +110,26 @@ export class RedisStorage implements IRedisStorage {
   public async getAllKeys(): Promise<string[]> {
     let keys = await this.client!.keys(`${this.prefix}*`);
     return keys;
+  }
+
+  public async exists(key: string): Promise<boolean> {
+    this.ensureConnected();
+    const exists = await this.client!.exists(this.getKey(key));
+    return exists > 0;
+  }
+
+  public async expire(
+    key: string,
+    seconds: number | string,
+    callback?: Callback<number>
+  ): Promise<void> {
+    this.ensureConnected();
+    const redisKey = this.getKey(key);
+    if (callback) {
+      await this.client!.expire(redisKey, seconds, callback);
+    } else {
+      await this.client!.expire(redisKey, seconds);
+    }
   }
 
   public async remove(key: string): Promise<void> {

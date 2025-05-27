@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import Redis, { Callback } from "ioredis";
 
 export interface IRedisStorage {
   client: Redis | null;
@@ -11,6 +11,12 @@ export interface IRedisStorage {
   get(key: string): string | null | Promise<string | null>;
   getAllKeyValues(): Promise<string[]>;
   getAllKeys(): Promise<string[]>;
+  exists(key: string): Promise<boolean>;
+  expire(
+    key: string,
+    seconds: number | string,
+    callback?: Callback<number>
+  ): Promise<void>;
   remove(key: string): void | Promise<void>;
   clear(): void | Promise<void>;
 }
@@ -25,8 +31,8 @@ type RedisListAndSetKeyValuePair = {
   values: string[] | number[];
 };
 type RedisSortedSetKeyValuePair = {
-    key: string;
-    values: RedisDefaultKeyValuePair[];
+  key: string;
+  values: RedisDefaultKeyValuePair[];
 };
 
 export type RedisStorageTypes =
