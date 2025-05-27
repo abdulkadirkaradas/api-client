@@ -91,7 +91,13 @@ describe("API Client Storage/RedisStorage operations", () => {
     await new Promise((res) => setTimeout(res, 1100));
     const existsAfter = await storage.exists("expire");
     expect(existsAfter).toBe(false);
-  })
+  });
+
+  it("Should increment key", async () => {
+    await storage.set("string", { [prefix + ":inc"]: "1" });
+    const value = await storage.incr("inc");
+    expect(`${value}`).toBe("2");
+  });
 
   it("Should remove data", async () => {
     await storage.set("string", { [prefix + ":strremove"]: "toremove" });

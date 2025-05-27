@@ -114,7 +114,9 @@ export class RedisStorage implements IRedisStorage {
 
   public async exists(key: string): Promise<boolean> {
     this.ensureConnected();
-    const exists = await this.client!.exists(this.getKey(key));
+    const redisKey = this.getKey(key);
+    const exists = await this.client!.exists(redisKey);
+
     return exists > 0;
   }
 
@@ -130,6 +132,19 @@ export class RedisStorage implements IRedisStorage {
     } else {
       await this.client!.expire(redisKey, seconds);
     }
+  }
+
+  public async incr(key: string): Promise<string | number> {
+    this.ensureConnected();
+    const redisKey = this.getKey(key);
+    const exists = await this.exists(key);
+
+    if (!exists) {
+      throw new Error("Key does not exist in Redis.");
+    }
+
+    const count = await this.client!.incr(redisKey);
+    return count;
   }
 
   public async remove(key: string): Promise<void> {

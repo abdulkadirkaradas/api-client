@@ -17,6 +17,7 @@ export interface IRedisStorage {
     seconds: number | string,
     callback?: Callback<number>
   ): Promise<void>;
+  incr(key: string): Promise<string | number>;
   remove(key: string): void | Promise<void>;
   clear(): void | Promise<void>;
 }
