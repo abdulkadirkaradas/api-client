@@ -1,5 +1,5 @@
 import { AuthorizationService as WebAuthorizationService } from "../client/authorization";
-import { IServiceConstructor } from "../../../interfaces/service";
+import { IServiceConstructor } from "../../../interfaces/services/service";
 import {
   ClientServiceStorageConfig,
   IStorage,
