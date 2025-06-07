@@ -22,9 +22,12 @@ export interface IRedisStorage {
   clear(): void | Promise<void>;
 }
 
+export type RedisHashKey = (string | Buffer | number)[];
 type RedisDefaultKeyValuePair = {
   key: string;
-  values: (string | Buffer | number)[];
+  values: {
+    [key: string]: string | number | boolean
+  };
 };
 export type RedisStringKeyValuePair = {
   [key: string]: {

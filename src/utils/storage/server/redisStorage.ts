@@ -1,13 +1,13 @@
 import { Callback, Redis } from "ioredis";
 import {
   IRedisStorage,
+  RedisHashKey,
   RedisOperationByType,
   RedisStorageConfig,
   RedisStorageTypes,
   RedisStringKeyValuePair,
 } from "../../../interfaces/storages/redis";
 
-type RedisHashKey = (string | Buffer | number)[];
 type RedisSortedSetArgs = (string | number)[];
 
 /**
@@ -48,6 +48,12 @@ export class RedisStorage implements IRedisStorage {
     options?: RedisStorageConfig
   ): Promise<void> {
     this.ensureConnected();
+    let key: string | undefined;
+    let values: any;
+    if (typeof data === "object" && "key" in data && "values" in data) {
+      key = (data as any).key;
+      values = (data as any).values;
+    }
     switch (type) {
       case "string":
         await this.setString(data as RedisStringKeyValuePair);
@@ -56,10 +62,16 @@ export class RedisStorage implements IRedisStorage {
         await this.setHash(data, options);
         break;
       case "list":
-        await this.client!.lpush(data.key as string, ...(data.values as any[]));
+        await this.client!.lpush(
+          key!,
+          ...Object.values(values).map((v) => v as string | number | Buffer)
+        );
         break;
       case "set":
-        await this.client!.sadd(data.key as string, ...(data.values as any[]));
+        await this.client!.sadd(
+          key!,
+          ...Object.values(values).map((v) => v as string | number | Buffer)
+        );
         break;
       case "sortedSet":
         await this.setSortedSet(data);
@@ -102,10 +114,7 @@ export class RedisStorage implements IRedisStorage {
   }
 
   private async setSortedSet(data: any) {
-    const args: RedisSortedSetArgs = [];
-    for (const item of data.values) {
-      args.push(item.score, item.value);
-    }
+    const args: RedisSortedSetArgs = Object.values(data.values);
     await this.client!.zadd(data.key as string, ...args);
   }
 
