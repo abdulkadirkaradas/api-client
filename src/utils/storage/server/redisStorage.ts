@@ -4,6 +4,7 @@ import {
   RedisOperationByType,
   RedisStorageConfig,
   RedisStorageTypes,
+  RedisStringKeyValuePair,
 } from "../../../interfaces/storages/redis";
 
 type RedisHashKey = (string | Buffer | number)[];
@@ -49,7 +50,7 @@ export class RedisStorage implements IRedisStorage {
     this.ensureConnected();
     switch (type) {
       case "string":
-        await this.client!.mset(data);
+        await this.setString(data as RedisStringKeyValuePair);
         break;
       case "hash":
         await this.setHash(data, options);
@@ -66,6 +67,23 @@ export class RedisStorage implements IRedisStorage {
       default:
         throw new Error("Unknown storage type");
     }
+  }
+
+  private async setString(data: RedisStringKeyValuePair) {
+    const isIntegerString = (v: any) =>
+      typeof v === "string" && /^-?\d+$/.test(v);
+    await Promise.all(
+      Object.entries(data).map(([key, { value, ttl }]) => {
+        const storeValue =
+          typeof value === "number" || isIntegerString(value)
+            ? String(value)
+            : JSON.stringify(value);
+
+        return ttl
+          ? this.client!.set(this.getKey(key), storeValue, "EX", Number(ttl))
+          : this.client!.set(this.getKey(key), storeValue);
+      })
+    );
   }
 
   private async setHash(data: any, options?: RedisStorageConfig) {
@@ -93,7 +111,9 @@ export class RedisStorage implements IRedisStorage {
 
   public async get(key: string): Promise<string | null> {
     this.ensureConnected();
-    return await this.client!.get(this.getKey(key));
+    const res = await this.client!.get(this.getKey(key));
+
+    return res !== null ? JSON.parse(res) : null;
   }
 
   public async getAllKeyValues(): Promise<string[]> {

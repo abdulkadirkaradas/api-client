@@ -22,18 +22,15 @@ export interface IRedisStorage {
   clear(): void | Promise<void>;
 }
 
-export type RedisDefaultKeyValuePair = { [key: string]: string | number };
-type RedisHashKeyValuePair = {
+type RedisDefaultKeyValuePair = {
   key: string;
-  values: RedisDefaultKeyValuePair;
+  values: (string | Buffer | number)[];
 };
-type RedisListAndSetKeyValuePair = {
-  key: string;
-  values: string[] | number[];
-};
-type RedisSortedSetKeyValuePair = {
-  key: string;
-  values: RedisDefaultKeyValuePair[];
+export type RedisStringKeyValuePair = {
+  [key: string]: {
+    value: string | number | boolean | object;
+    ttl?: number | string;
+  };
 };
 
 export type RedisStorageTypes =
@@ -45,15 +42,15 @@ export type RedisStorageTypes =
 
 export type RedisOperationByType<T extends RedisStorageTypes> =
   T extends "string"
-    ? RedisDefaultKeyValuePair
+    ? RedisStringKeyValuePair
     : T extends "hash"
-    ? RedisHashKeyValuePair
+    ? RedisDefaultKeyValuePair
     : T extends "list"
-    ? RedisListAndSetKeyValuePair
+    ? RedisDefaultKeyValuePair
     : T extends "set"
-    ? RedisListAndSetKeyValuePair
+    ? RedisDefaultKeyValuePair
     : T extends "sortedSet"
-    ? RedisSortedSetKeyValuePair
+    ? RedisDefaultKeyValuePair
     : never;
 
 export interface RedisStorageConfig {
