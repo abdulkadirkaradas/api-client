@@ -1,6 +1,5 @@
 import { AuthorizationTokenConfig } from "../interfaces/auth";
 import { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
-import { ClientServices } from "../core/services/client/clientService";
 import { EventBus } from "../utils/eventBus/EventBus";
 import { handleAPIError } from "../utils/error/errorHandler";
 import { InterceptorConstructor } from "./interceptorConstructor";
@@ -9,6 +8,7 @@ import {
   IInterceptorConfig,
   TokenRefreshConfig,
 } from "../interfaces/interceptors";
+import { AuthorizationService } from "../core/services/client/authorization";
 
 /**
  * The ResponseInterceptor class is responsible for handling API responses and errors.
@@ -22,7 +22,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   private eventBus: EventBus;
 
   // Client service for handling API requests and authentication.
-  private clientService: ClientServices;
+  private authService: AuthorizationService;
 
   // Configuration for token refresh operations.
   private tokenRefreshConfig: TokenRefreshConfig = {};
@@ -53,7 +53,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   constructor(config: IInterceptorConfig) {
     super(config.client);
     this.eventBus = config.eventBus;
-    this.clientService = new ClientServices({
+    this.authService = new AuthorizationService({
       client: this.client,
       eventBus: this.eventBus,
       authProtocol: config.authProtocol,
@@ -98,7 +98,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
    */
   private setClientAuthServiceConfig(config: AuthorizationTokenConfig) {
     // Update the client service's token configuration.
-    this.clientService.auth.setTokenConfig(config);
+    this.authService.setTokenConfig(config);
 
     // Update the token refresh configuration.
     this.setTokenRefreshConfig({
@@ -217,11 +217,11 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
     // Retrieve access token or refresh token from storage based on the configuration.
     const atStorage = config.tokenStorageType.accessToken
-      ? this.clientService.auth.getStorage("accessToken")
+      ? this.authService.getStorage("accessToken")
       : null;
 
     const rtStorage = config.tokenStorageType.refreshToken
-      ? this.clientService.auth.getStorage("refreshToken")
+      ? this.authService.getStorage("refreshToken")
       : null;
 
     if (!atStorage && !rtStorage) {
@@ -250,7 +250,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
 
     try {
       // Send the refresh token request to the server.
-      return this.clientService.auth.refreshToken({
+      return this.authService.refreshToken({
         url: this.tokenRefreshConfig.url || "",
         data: { [tokenData.type]: tokenData.token },
       });

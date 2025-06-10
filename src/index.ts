@@ -1,17 +1,17 @@
 import { APIClient } from "./core/apiClient";
-import { ClientServices } from "./core/services/client/clientService";
 import { APIClientConfig } from "./interfaces/core";
 import { StorageFactory as BaseStorageFactory } from "./utils/storage/storageFactory";
 import { MethodGenerator as Generator } from "./methods/generator";
 import { EventBus as EventBusClass } from "./utils/eventBus/EventBus";
 import { RedisService } from "./core/services/server/redisService";
+import { AuthorizationService } from "./core/services/client/authorization";
 
 const moodo = (config: APIClientConfig) => {
   const ApiClient = new APIClient(config);
   const EventBus = new EventBusClass();
   const MethodGenerator = new Generator(ApiClient.getInstance());
   const Services = {
-    client: new ClientServices({
+    authorization: new AuthorizationService({
       client: ApiClient.getInstance(),
       eventBus: ApiClient.getEventBusInstance(),
       authProtocol: ApiClient.getAuthProtocolConfig(),

@@ -15,7 +15,7 @@ describe("API Client Autorization Service", () => {
     localStorage.clear();
     jest.clearAllMocks();
 
-    setup.clientService.auth.setTokenConfig({
+    setup.authService.setTokenConfig({
       tokenStorageType: {
         accessToken: "localStorage",
         refreshToken: "localStorage",
@@ -26,11 +26,7 @@ describe("API Client Autorization Service", () => {
       },
     });
 
-    storage = setup.clientService.createStorages({
-      localStorage: {
-        type: "localStorage"
-      }
-    }).localStorage;
+    storage = setup.storage.createStorage("web", "localStorage");
   });
 
   afterEach(() => {
@@ -45,9 +41,9 @@ describe("API Client Autorization Service", () => {
       },
     };
 
-    setup.clientService.auth.setTokenConfig(tokenConfig);
+    setup.authService.setTokenConfig(tokenConfig);
 
-    expect(setup.clientService.auth.getTokenConfig()).toMatchObject(tokenConfig);
+    expect(setup.authService.getTokenConfig()).toMatchObject(tokenConfig);
   });
 
   it("should handle user registration service successfully", async () => {
@@ -72,7 +68,7 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200, registerStub);
 
-    const result = await setup.clientService.auth.register(config);
+    const result = await setup.authService.register(config);
     expect(result.data.id).toBe(1);
     expect(result.data.email).toBe("string");
     expect(result.data.password).toBe("string");
@@ -97,7 +93,7 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200, loginStub);
 
-    const result = await setup.clientService.auth.login(config);
+    const result = await setup.authService.login(config);
     expect(storage.get("accessToken")).toBe(result.data.access_token);
     expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
   });
@@ -117,7 +113,7 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200, resfreshTokenStub);
 
-    const result = await setup.clientService.auth.refreshToken(config);
+    const result = await setup.authService.refreshToken(config);
     expect(storage.get("accessToken")).toBe(result.data.access_token);
     expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
   });
@@ -129,7 +125,7 @@ describe("API Client Autorization Service", () => {
 
     setup.mock.onPost(config.url).reply(200);
 
-    await setup.clientService.auth.logout(config);
+    await setup.authService.logout(config);
     expect(storage.get("accessToken")).toBeNull();
     expect(storage.get("refreshToken")).toBeNull();
   });
@@ -150,7 +146,7 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(401, loginStub);
 
     try {
-      await setup.clientService.auth.login(config);
+      await setup.authService.login(config);
     } catch (error: any) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(loginStub);
@@ -176,7 +172,7 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(401, registerStub);
 
     try {
-      await setup.clientService.auth.register(config);
+      await setup.authService.register(config);
     } catch (error: any) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(registerStub);
@@ -199,7 +195,7 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(401, resfreshTokenStub);
 
     try {
-      await setup.clientService.auth.refreshToken(config);
+      await setup.authService.refreshToken(config);
     } catch (error: any) {
       expect(error.response.status).toBe(401);
       expect(error.response.data).toEqual(resfreshTokenStub);
