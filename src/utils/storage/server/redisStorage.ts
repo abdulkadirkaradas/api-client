@@ -22,11 +22,11 @@ export class RedisStorage implements IRedisStorage {
     this.client = client;
 
     if (prefix) {
-      this.prefix = prefix;
+      this.setPrefix(prefix);
     }
   }
 
-  private getKey(key: string): string {
+  public getKey(key: string): string {
     if (this.prefix.includes(":")) {
       this.prefix.replace(":", "");
     }
@@ -34,12 +34,22 @@ export class RedisStorage implements IRedisStorage {
     return `${this.prefix}:${key}`;
   }
 
-  private ensureConnected() {
+  public ensureConnected() {
     if (!this.client) {
       throw new Error(
         "Redis connection could not be established. Please use connect function first."
       );
     }
+  }
+
+  public setPrefix(prefix: string): void {
+    if (!prefix) return;
+
+    if (prefix.includes(":")) {
+      prefix = prefix.replace(":", "");
+    }
+
+    this.prefix = prefix;
   }
 
   public async set(
@@ -51,7 +61,7 @@ export class RedisStorage implements IRedisStorage {
     let key: string | undefined;
     let values: any;
     if (typeof data === "object" && "key" in data && "values" in data) {
-      key = (data as any).key;
+      key = this.getKey((data as any).key);
       values = (data as any).values;
     }
     switch (type) {
@@ -99,23 +109,27 @@ export class RedisStorage implements IRedisStorage {
   }
 
   private async setHash(data: any, options?: RedisStorageConfig) {
+    const keyWithPrefix = this.getKey(data.key) as string;
+
     await this.client!.hset(
-      data.key as string,
+      keyWithPrefix,
       ...(Object.entries(data.values).flat() as RedisHashKey)
     );
     if (options?.expirySeconds) {
-      await this.client!.expire(data.key as string, options.expirySeconds);
+      await this.client!.expire(keyWithPrefix as string, options.expirySeconds);
     } else if (options?.expiryMilliseconds) {
       await this.client!.pexpire(
-        data.key as string,
+        keyWithPrefix,
         options.expiryMilliseconds
       );
     }
   }
 
   private async setSortedSet(data: any) {
+    const keyWithPrefix = this.getKey(data.key) as string;
     const args: RedisSortedSetArgs = Object.values(data.values);
-    await this.client!.zadd(data.key as string, ...args);
+
+    await this.client!.zadd(keyWithPrefix, ...args);
   }
 
   public async get(key: string): Promise<string | null> {

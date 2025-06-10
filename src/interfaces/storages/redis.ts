@@ -3,6 +3,9 @@ import Redis, { Callback } from "ioredis";
 export interface IRedisStorage {
   client: Redis | null;
   connect(client: Redis, prefix?: string): void;
+  ensureConnected(): void;
+  getKey(key: string): string;
+  setPrefix(prefix: string): void;
   set(
     type: RedisStorageTypes,
     data: RedisOperationByType<RedisStorageTypes>,
