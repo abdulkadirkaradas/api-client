@@ -2,8 +2,9 @@ import { APIClient } from "./core/apiClient";
 import { ClientServices } from "./core/services/client/clientService";
 import { APIClientConfig } from "./interfaces/core";
 import { StorageFactory as BaseStorageFactory } from "./utils/storage/storageFactory";
-import { MethodGenerator as Generator } from './methods/generator';
-import { EventBus as EventBusClass } from './utils/eventBus/EventBus';
+import { MethodGenerator as Generator } from "./methods/generator";
+import { EventBus as EventBusClass } from "./utils/eventBus/EventBus";
+import { RedisService } from "./core/services/server/redisService";
 
 const moodo = (config: APIClientConfig) => {
   const ApiClient = new APIClient(config);
@@ -16,6 +17,7 @@ const moodo = (config: APIClientConfig) => {
       authProtocol: ApiClient.getAuthProtocolConfig(),
       tokenConfig: config.tokenConfig || {},
     }),
+    redis: new RedisService(),
   };
   const StorageFactory = new BaseStorageFactory();
 
