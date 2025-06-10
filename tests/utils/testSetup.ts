@@ -6,6 +6,7 @@ import { ClientServices } from '../../src/core/services/client/clientService';
 import { EventBus } from '../../src/utils/eventBus/EventBus';
 import { MethodGenerator } from '../../src/methods/generator';
 import { StorageFactory } from '../../src/utils/storage/storageFactory';
+import { RedisService } from '../../src/core/services/server/redisService';
 
 export class TestSetup {
   public config: APIClientConfig;
@@ -14,6 +15,7 @@ export class TestSetup {
   public eventBus: EventBus;
   public storage: StorageFactory;
   public clientService: ClientServices;
+  public redisService: RedisService;
   public methodGenerator: MethodGenerator;
 
   constructor() {
@@ -33,6 +35,7 @@ export class TestSetup {
     this.eventBus = create.EventBus;
     this.methodGenerator = create.MethodGenerator;
     this.clientService = create.Services.client;
+    this.redisService = create.Services.redis;
     this.storage = create.StorageFactory;
     this.mock = new MockAdapter(this.instance.getInstance());
   }
