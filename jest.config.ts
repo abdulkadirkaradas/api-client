@@ -9,6 +9,7 @@ const config: Config = {
   moduleFileExtensions: ["ts", "js", "json", "node"],
   setupFilesAfterEnv: ["jest-localstorage-mock"],
   testPathIgnorePatterns: ["/src"],
+  detectOpenHandles: true,
 };
 
 export default config;
