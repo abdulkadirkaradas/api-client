@@ -27,6 +27,13 @@ export class TestSetup {
       headers: {
         "Content-Type": "application/json",
       },
+      interceptor: {
+        response: {
+          tokenRefreshConfig: {
+            url: "/auth/refresh-token",
+          }
+        }
+      }
     };
 
     const create = moodo(this.config);
