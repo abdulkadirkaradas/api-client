@@ -6,7 +6,7 @@ import { InterceptorConstructor } from "./interceptorConstructor";
 import {
   AuthRequestsSent,
   IInterceptorConfig,
-  TokenRefreshConfig,
+  ResponseTokenRefreshConfig,
 } from "../interfaces/interceptors";
 import { AuthorizationService } from "../core/services/client/authorization";
 
@@ -25,7 +25,7 @@ export class ResponseInterceptor extends InterceptorConstructor {
   private authService: AuthorizationService;
 
   // Configuration for token refresh operations.
-  private tokenRefreshConfig: TokenRefreshConfig = {};
+  private tokenRefreshConfig: ResponseTokenRefreshConfig = {};
 
   private authRequestsSent: AuthRequestsSent = {};
 
@@ -53,6 +53,10 @@ export class ResponseInterceptor extends InterceptorConstructor {
   constructor(config: IInterceptorConfig) {
     super(config.client);
     this.eventBus = config.eventBus;
+    this.tokenRefreshConfig = {
+      ...this.tokenRefreshConfig,
+      ...(config.tokenRefreshConfig || {}),
+    };
     this.authService = new AuthorizationService({
       client: this.client,
       eventBus: this.eventBus,
@@ -83,9 +87,9 @@ export class ResponseInterceptor extends InterceptorConstructor {
    * Updates the token refresh configuration with the provided settings.
    * This configuration is used when attempting to refresh the access token.
    *
-   * @param {TokenRefreshConfig} config - Configuration object for token refresh.
+   * @param {ResponseTokenRefreshConfig} config - Configuration object for token refresh.
    */
-  public setTokenRefreshConfig(config: TokenRefreshConfig) {
+  public setTokenRefreshConfig(config: ResponseTokenRefreshConfig) {
     // Merge the new configuration with the existing token refresh configuration.
     this.tokenRefreshConfig = { ...this.tokenRefreshConfig, ...config };
   }

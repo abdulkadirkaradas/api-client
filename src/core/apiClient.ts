@@ -28,6 +28,8 @@ export class APIClient extends APIClientConstructor {
         useAuthProtocol: authProtocolConfig?.useAuthProtocol || true,
         useOAUTHProtocol: authProtocolConfig?.useOAUTHProtocol || false,
       },
+      tokenRefreshConfig:
+        config.interceptor?.response?.tokenRefreshConfig || {},
     });
   }
 }

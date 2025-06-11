@@ -2,7 +2,7 @@ import { AuthorizationTokenConfig } from "./auth";
 import { AxiosInstance, RawAxiosRequestHeaders } from "axios";
 import { EventBus } from "../utils/eventBus/EventBus";
 import { IStorage } from "./storages/storage";
-import { AuthProtocolConfig } from "./core";
+import { AuthProtocolConfig } from "./auth";
 
 export type CommonRequestHeadersList =
   | "Accept"
@@ -16,10 +16,11 @@ export interface IInterceptorConfig {
   client: AxiosInstance;
   eventBus: EventBus;
   authProtocol: AuthProtocolConfig;
+  tokenRefreshConfig?: ResponseTokenRefreshConfig;
   headers?: RawAxiosRequestHeaders;
 }
 
-export interface TokenRefreshConfig {
+export interface ResponseTokenRefreshConfig {
   url?: string;
   config?: AuthorizationTokenConfig;
   storage?: IStorage;

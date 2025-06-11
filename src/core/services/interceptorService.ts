@@ -26,6 +26,7 @@ export class InterceptorService {
       client: config.client,
       eventBus: config.eventBus,
       authProtocol: config.authProtocol,
+      tokenRefreshConfig: config.tokenRefreshConfig || {},
     });
   }
 }
