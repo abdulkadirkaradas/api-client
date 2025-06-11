@@ -7,7 +7,7 @@ import { APIClientConstructor } from "./apiClientConstructor";
  * The `APIClient` class is responsible for managing API interactions.
  * It extends the `APIClientConstructor` class and provides additional
  * functionality such as HTTP methods and request/response interceptors.
- * 
+ *
  * @class APIClient
  */
 export class APIClient extends APIClientConstructor {
@@ -17,13 +17,17 @@ export class APIClient extends APIClientConstructor {
   constructor(config: APIClientConfig) {
     super(config);
 
-    this.methods = new Methods(this.client);
+    const authProtocolConfig = this.getAuthProtocolConfig();
 
+    this.methods = new Methods(this.client);
     this.interceptorService = new InterceptorService({
       client: this.client,
       headers: config.headers || {},
       eventBus: this.getEventBusInstance(),
-      authProtocol: this.getAuthProtocolConfig()
+      authProtocol: {
+        useAuthProtocol: authProtocolConfig?.useAuthProtocol || true,
+        useOAUTHProtocol: authProtocolConfig?.useOAUTHProtocol || false,
+      },
     });
   }
 }

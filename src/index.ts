@@ -8,13 +8,18 @@ import { AuthorizationService } from "./core/services/client/authorization";
 
 const moodo = (config: APIClientConfig) => {
   const ApiClient = new APIClient(config);
+  const authProtocolConfig = ApiClient.getAuthProtocolConfig();
+
   const EventBus = new EventBusClass();
   const MethodGenerator = new Generator(ApiClient.getInstance());
   const Services = {
     authorization: new AuthorizationService({
       client: ApiClient.getInstance(),
       eventBus: ApiClient.getEventBusInstance(),
-      authProtocol: ApiClient.getAuthProtocolConfig(),
+      authProtocol: {
+        useAuthProtocol: authProtocolConfig?.useAuthProtocol || true,
+        useOAUTHProtocol: authProtocolConfig?.useOAUTHProtocol || false,
+      },
       tokenConfig: config.tokenConfig || {},
     }),
     redis: new RedisService(),

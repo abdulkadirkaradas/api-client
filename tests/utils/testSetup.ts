@@ -21,7 +21,6 @@ export class TestSetup {
   constructor() {
     this.config = {
       authProtocol: {
-        useAuthProtocol: true,
         useOAUTHProtocol: true,
       },
       baseURL: "https://api.example.com",
