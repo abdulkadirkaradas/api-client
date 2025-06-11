@@ -68,7 +68,6 @@ describe("API Client Storage/RedisStorage operations", () => {
     // Expiry test: hash mast be removed after 2 seconds
     await new Promise((res) => setTimeout(res, 2100));
     const h2 = await storage.client?.hgetall(`${prefix}hash1`);
-    console.log(h2);
     expect(Object.keys(h2 ?? {}).length).toBe(0);
   });
 

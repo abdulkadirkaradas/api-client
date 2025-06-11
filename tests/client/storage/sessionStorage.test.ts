@@ -1,4 +1,3 @@
-import "jest-localstorage-mock";
 import { TestSetup } from "../../utils/testSetup";
 import { AuthorizationServiceConfig } from "../../../src/interfaces/auth";
 import { IStorage } from "../../../src/interfaces/storages/storage";
@@ -9,10 +8,9 @@ describe("API Client Storage/SessionStorage service", () => {
 
   beforeEach(() => {
     setup = new TestSetup();
-    sessionStorage.clear();
     jest.clearAllMocks();
 
-    setup.clientService.auth.setTokenConfig({
+    setup.authService.setTokenConfig({
       tokenStorageType: {
         accessToken: "sessionStorage",
         refreshToken: "sessionStorage",
@@ -23,11 +21,8 @@ describe("API Client Storage/SessionStorage service", () => {
       },
     });
 
-    storage = setup.clientService.createStorages({
-      sessionStorage: {
-        type: "sessionStorage"
-      }
-    }).sessionStorage;
+    storage = setup.storage.createStorage("web", "sessionStorage");
+    storage.clear();
   });
 
   it("should store tokens in sessionStorage after login", () => {
@@ -44,7 +39,7 @@ describe("API Client Storage/SessionStorage service", () => {
       refresh_token: "string",
     });
 
-    setup.clientService.auth
+    setup.authService
       .login(config)
       .then(function (result) {
         expect(storage.get("accessToken")).toBe(result.data.access_token);

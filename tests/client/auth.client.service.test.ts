@@ -1,4 +1,3 @@
-import "jest-localstorage-mock";
 import { TestSetup } from "../utils/testSetup";
 import {
   AuthorizationServiceConfig,
@@ -8,11 +7,10 @@ import { IStorage } from "../../src/interfaces/storages/storage";
 
 describe("API Client Autorization Service", () => {
   let setup: TestSetup;
-  let storage: IStorage | any;
+  let storage: IStorage;
 
   beforeEach(() => {
     setup = new TestSetup();
-    localStorage.clear();
     jest.clearAllMocks();
 
     setup.authService.setTokenConfig({
@@ -25,8 +23,8 @@ describe("API Client Autorization Service", () => {
         refreshTokenName: "refresh_token",
       },
     });
-
     storage = setup.storage.createStorage("web", "localStorage");
+    storage.clear();
   });
 
   afterEach(() => {
@@ -92,8 +90,8 @@ describe("API Client Autorization Service", () => {
     };
 
     setup.mock.onPost(config.url).reply(200, loginStub);
-
     const result = await setup.authService.login(config);
+
     expect(storage.get("accessToken")).toBe(result.data.access_token);
     expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
   });

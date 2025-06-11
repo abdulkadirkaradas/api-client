@@ -1,4 +1,3 @@
-import "jest-localstorage-mock";
 import { TestSetup } from "./utils/testSetup";
 import {
   AuthorizationServiceConfig,
@@ -15,7 +14,6 @@ describe("API Client EventBus", () => {
     mockCallback1 = jest.fn();
     mockCallback2 = jest.fn();
 
-    localStorage.clear();
     jest.clearAllMocks();
   });
 
@@ -103,11 +101,11 @@ describe("API Client EventBus", () => {
       },
     };
 
-    setup.clientService.auth.setTokenConfig(tokenConfig);
+    setup.authService.setTokenConfig(tokenConfig);
 
     setup.mock.onPost(config.url).reply(200, loginStub);
 
-    await setup.clientService.auth.login(config);
+    await setup.authService.login(config);
   }
   // -- TEST FOR INTERCEPTOR EVENTS --
   // ------------------------------------------------

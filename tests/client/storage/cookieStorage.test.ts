@@ -1,4 +1,3 @@
-import "jest-localstorage-mock";
 import { TestSetup } from "../../utils/testSetup";
 import { IStorage } from "../../../src/interfaces/storages/storage";
 
@@ -8,14 +7,10 @@ describe("API Client Storage/CookieStorage service", () => {
 
   beforeEach(() => {
     setup = new TestSetup();
-    localStorage.clear();
     jest.clearAllMocks();
 
-    storage = setup.clientService.createStorages({
-      cookie: {
-        type: "cookie"
-      }
-    }).cookie;
+    storage = setup.storage.createStorage("web", "cookie");
+    storage.clear();
   });
 
   it("should store a value in cookie storage", () => {
