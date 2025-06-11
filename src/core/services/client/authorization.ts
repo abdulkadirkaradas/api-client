@@ -1,4 +1,4 @@
-import { AuthProtocolConfig } from "../../../interfaces/core";
+import { AuthProtocolConfig } from "../../../interfaces/auth";
 import { AxiosResponse } from "axios";
 import { StorageFactory } from "../../../utils/storage/storageFactory";
 import { EventBus } from "../../../utils/eventBus/EventBus";
