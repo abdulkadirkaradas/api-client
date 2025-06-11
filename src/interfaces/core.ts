@@ -1,12 +1,13 @@
 import { AxiosRequestConfig } from "axios";
-import { AuthorizationTokenConfig } from "./auth";
-
-export type AuthProtocolConfig = {
-    useAuthProtocol?: boolean,
-    useOAUTHProtocol?: boolean
-}
+import { AuthorizationTokenConfig, AuthProtocolConfig } from "./auth";
+import { ResponseTokenRefreshConfig } from "./interceptors";
 
 export interface APIClientConfig extends AxiosRequestConfig {
     authProtocol?: AuthProtocolConfig;
     tokenConfig?: AuthorizationTokenConfig;
+    interceptor?: {
+        response?: {
+            tokenRefreshConfig?: ResponseTokenRefreshConfig;
+        }
+    }
 }

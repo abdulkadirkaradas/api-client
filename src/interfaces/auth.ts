@@ -8,7 +8,12 @@ export interface AuthorizationServiceConfig {
   config?: APIClientConfig;
 }
 
-export type AuthorizationTokenType = 'accessToken' | 'refreshToken';
+export type AuthorizationTokenType = "accessToken" | "refreshToken";
+
+export type AuthProtocolConfig = {
+  useAuthProtocol?: boolean;
+  useOAUTHProtocol?: boolean;
+};
 
 export interface AuthorizationTokenConfig {
   requestTokenConfig?: {
