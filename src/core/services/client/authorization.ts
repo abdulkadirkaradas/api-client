@@ -1,10 +1,10 @@
-import { AuthProtocolConfig } from '../../../interfaces/core';
-import { AxiosResponse } from 'axios';
-import { StorageFactory } from '../../../utils/storage/storageFactory';
-import { EventBus } from '../../../utils/eventBus/EventBus';
-import { IServiceConstructor } from '../../../interfaces/services/service';
-import { IStorage, WebStorageType } from '../../../interfaces/storages/storage';
-import { Methods } from '../../../methods/methods';
+import { AuthProtocolConfig } from "../../../interfaces/core";
+import { AxiosResponse } from "axios";
+import { StorageFactory } from "../../../utils/storage/storageFactory";
+import { EventBus } from "../../../utils/eventBus/EventBus";
+import { IServiceConstructor } from "../../../interfaces/services/service";
+import { IStorage, WebStorageType } from "../../../interfaces/storages/storage";
+import { Methods } from "../../../methods/methods";
 import {
   AuthorizationServiceConfig,
   AuthorizationTokenConfig,
@@ -107,7 +107,10 @@ export class AuthorizationService {
       tokenName: "accessToken" | "refreshToken"
     ) => {
       if (type && storageTypes.includes(type)) {
-        this.tokenStorage[tokenName] = this.storageFactory.createStorage("web", type);
+        this.tokenStorage[tokenName] = this.storageFactory.createStorage(
+          "web",
+          type
+        );
       }
     };
 
@@ -313,15 +316,15 @@ export class AuthorizationService {
     }
 
     if (this.authProtocolConfig.useAuthProtocol) {
-      [this.accessTokenName, this.refreshTokenName]
-        .filter((tokenType) => {
-          tokenType === "accessToken" ||
-            (this.authProtocolConfig.useOAUTHProtocol &&
-              tokenType === "refreshToken");
-        })
-        .forEach((tokenType) => {
+      [this.accessTokenName, this.refreshTokenName].forEach((tokenType) => {
+        if (
+          tokenType === this.accessTokenName ||
+          (this.authProtocolConfig.useOAUTHProtocol &&
+            tokenType === this.refreshTokenName)
+        ) {
           this.removeToken(tokenType as AuthorizationTokenType);
-        });
+        }
+      });
     }
 
     return response;
