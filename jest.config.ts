@@ -7,7 +7,6 @@ const config: Config = {
     "^.+\\.ts$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "json", "node"],
-  setupFilesAfterEnv: ["jest-localstorage-mock"],
   testPathIgnorePatterns: ["/src"],
   detectOpenHandles: true,
 };
