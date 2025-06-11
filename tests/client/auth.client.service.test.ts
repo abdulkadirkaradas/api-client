@@ -7,7 +7,8 @@ import { IStorage } from "../../src/interfaces/storages/storage";
 
 describe("API Client Autorization Service", () => {
   let setup: TestSetup;
-  let storage: IStorage;
+  let aStorage: IStorage;
+  let rStorage: IStorage;
 
   beforeEach(() => {
     setup = new TestSetup();
@@ -23,8 +24,10 @@ describe("API Client Autorization Service", () => {
         refreshTokenName: "refresh_token",
       },
     });
-    storage = setup.storage.createStorage("web", "localStorage");
-    storage.clear();
+    aStorage = setup.authService.getStorage("accessToken");
+    rStorage = setup.authService.getStorage("refreshToken");
+    aStorage.clear();
+    rStorage.clear();
   });
 
   afterEach(() => {
@@ -92,8 +95,8 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(200, loginStub);
     const result = await setup.authService.login(config);
 
-    expect(storage.get("accessToken")).toBe(result.data.access_token);
-    expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
+    expect(aStorage.get("accessToken")).toBe(result.data.access_token);
+    expect(rStorage.get("refreshToken")).toBe(result.data.refresh_token);
   });
 
   it("should handle refresh token service successfully", async () => {
@@ -112,20 +115,22 @@ describe("API Client Autorization Service", () => {
     setup.mock.onPost(config.url).reply(200, resfreshTokenStub);
 
     const result = await setup.authService.refreshToken(config);
-    expect(storage.get("accessToken")).toBe(result.data.access_token);
-    expect(storage.get("refreshToken")).toBe(result.data.refresh_token);
+    expect(aStorage.get("accessToken")).toBe(result.data.access_token);
+    expect(rStorage.get("refreshToken")).toBe(result.data.refresh_token);
   });
 
   it("should handle user logout service successfully", async () => {
     let config: AuthorizationServiceConfig = {
       url: "/auth/logout",
     };
+    aStorage.set("accessToken", "test_access_token");
+    rStorage.set("refreshToken", "test_refresh_token");
 
     setup.mock.onPost(config.url).reply(200);
 
     await setup.authService.logout(config);
-    expect(storage.get("accessToken")).toBeNull();
-    expect(storage.get("refreshToken")).toBeNull();
+    expect(aStorage.get("accessToken")).toBeNull();
+    expect(rStorage.get("refreshToken")).toBeNull();
   });
 
   it("should handle 401 error for login service", async () => {
