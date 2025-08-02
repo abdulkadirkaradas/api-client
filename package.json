@@ -40,16 +40,16 @@
   "license": "MIT",
   "description": "Simple API Client package based on axios. Types included.",
   "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "axios": "^1.9.0",
+    "@types/jest": "^30.0.0",
+    "axios": "^1.11.0",
     "axios-mock-adapter": "^2.1.0",
-    "jest": "^29.7.0",
-    "jest-environment-jsdom": "^29.7.0",
-    "ts-jest": "^29.3.4",
+    "jest": "^30.0.5",
+    "jest-environment-jsdom": "^30.0.5",
+    "ts-jest": "^29.4.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.9.2"
   },
   "dependencies": {
-    "ioredis": "^5.6.1"
+    "ioredis": "^5.7.0"
   }
 }
