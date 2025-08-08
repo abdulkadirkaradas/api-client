@@ -8,47 +8,24 @@
 - [x] **Types(.d.ts)**: Provides type definitions for all API methods and responses.
 - [x] **API Client**: A simple and flexible API client based on axios.
 - [x] **Authorization Service**: Handles authorization and token management.
-- [x] **Storage Service**: Provides built-in local, session and cookie storage management.
+- [x] **Storage Service**: Provides built-in storage management for web and node environments.
+- [x] **Redis Service**: Provides built-in Redis storage management and basic Redis service.
 - [x] **Interceptor Service**: Handles request and response interceptors for API calls.
 - [x] **Method Generator**: Generates API methods based on the provided configuration.
 - [x] **Built-in EventBus**: Provides a simple event bus for communication between components.
 - [x] **Error Handling**: Provides a consistent way to handle errors across the application.
 - [x] **Well Documented**: Comprehensive documentation with examples and usage instructions.
-- The services currently only support the browser environment. Node.js support will be added in the future.
+- The services supports both `browser` and `node` environments.
 
-# Documentation
+# Quick Start
 
 ## Installation
 
-Add package dependency;
-
 ```bash
 npm i moodo
-
 ```
 
-Add package as a devDependecy;
-
-```bash
-npm i --save-dev moodo
-
-```
-
-## Example
-
-Moodo API Client aims to provide developers with a pre-configured approach to basic `Authorization` processes.
-
-The basic configuration settings and a usage example are as follows:
-
-### Instance Creation
-
-> [!note]
->
-> The `authProtocol` property is required. This property essentially determines whether the `Authorization Service` will process `access` and `refresh` tokens. The `authProtocol` property has two sub-properties, namely `useAuthProtocol` and `useOAUTHProtocol`. The `useAuthProtocol` property specifies whether authorization operations will return any token (JWT Token, OAUTH Token, etc.). `useOAUTHProtocol` specifies whether it will return a refresh token.
-
-> [!warning]
->
-> If `authProtocol` property is not configured correctly, tokens will not be stored and used properly!
+## Basic Usage
 
 ```typescript
 import { moodo } from "moodo";
@@ -63,25 +40,59 @@ const instance = new moodo({
     "Content-Type": "application/json",
   },
 });
+
+// Make API calls
+instance.methods
+  .post("/endpoint", { data: "example" })
+  .then((response) => {
+    console.log("Response:", response.data);
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
 ```
 
-<hr>
+## Core Components
 
-The API Client `instance` provides certain features for use with the API Client.
+The API Client `instance` provides access to several powerful features:
 
-- **API Client**: The API Client instance provides a simple and flexible API client based on axios. You can use it to make API calls and handle responses.
-- **Method Generator**: The Method Generator facade provides a method generator that allows you to create API methods based on the provided configuration. This is useful for generating methods for different API endpoints and HTTP methods.
-- **Services**: The Services facade provides access to various services such as `Authorization`, `Storage`, and `Interceptor` services. These services can be used to handle authorization, storage, and request/response interceptors for API calls.
-- **Storages**: The Storages facade provides built-in storage management for local, session, and cookie storage. This allows you to easily manage data in the browser's storage.
-- **EventBus**: The EventBus provides a built-in event bus that allows you to communicate between different components of your application. This is useful for handling events and notifications across your application.
+- **[API Client](./docs/api-client.md)**: HTTP methods and request/response interceptors
+- **[Method Generator](./docs/method-generator.md)**: Dynamic API method creation from configuration
+- **[Authorization Service](./docs/authorization.md)**: Token management and authentication workflows
+- **[Storage Service](./docs/storage.md)**: Cross-platform storage solutions (localStorage, Redis, File, etc.)
+- **[EventBus](./docs/eventbus.md)**: Event-driven communication with priority and dependency support
 
-## Features & Documentation
+## Documentation
 
-- **API Client**: See [src/core/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/core/README.md)
-- **Authorization & Storage Service**: See [src/core/services/client/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/core/services/client/README.md)
-- **Interceptors**: See [src/interceptors/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/interceptors/README.md)
-- **Method Generator**: See [src/methods/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/methods/README.md)
-- **StorageService**: See [src/utils/storage/client/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/utils/storage/client/README.md)
-- **EventBus**: See [src/utils/eventBus/README.md](https://github.com/abdulkadirkaradas/moodo/blob/develop/src/utils/eventBus/README.md)
+### Getting Started
+- **[Quick Start Guide](./docs/examples/quick-start.md)** - Get up and running in minutes
+- **[Advanced Usage](./docs/examples/advanced-usage.md)** - Complex patterns and use cases
 
-Each folder contains a detailed, clear README with usage and examples for that feature.
+### Core Features
+- **[API Client](./docs/api-client.md)** - HTTP methods, interceptors, and request handling
+- **[Authorization](./docs/authorization.md)** - Authentication, token management, and security
+- **[Storage](./docs/storage.md)** - Data persistence across web and Node.js environments
+- **[EventBus](./docs/eventbus.md)** - Event-driven architecture and component communication
+- **[Method Generator](./docs/method-generator.md)** - Dynamic API method generation
+
+### Configuration
+
+> [!note]
+>
+> The `authProtocol` property is optional. This property essentially determines whether the `Authorization Service` will process `access` and `refresh` tokens.
+>
+> By default, the `useAuthProtocol` property is set to `true`, and `useOAUTHProtocol` is set to `false`. If a refresh token needs to be stored, the `useOAUTHProtocol` property should be set to `true`.
+
+> [!warning]
+>
+> If `authProtocol` property is not configured correctly, tokens will not be stored and used properly!
+
+For detailed configuration options and advanced usage patterns, please refer to the specific documentation files linked above.
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines and submit pull requests to the develop branch.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
