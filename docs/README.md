@@ -8,6 +8,7 @@ This directory contains comprehensive documentation for Moodo API Client. The do
 - **[API Client](./api-client.md)** - HTTP methods, interceptors, and request handling
 - **[Authorization](./authorization.md)** - Authentication, token management, and security
 - **[Storage](./storage.md)** - Data persistence across web and Node.js environments
+- **[Redis Service](./redis-service.md)** - High-level Redis operations for caching, rate limiting, and queuing etc.
 - **[EventBus](./eventbus.md)** - Event-driven architecture and component communication
 - **[Method Generator](./method-generator.md)** - Dynamic API method generation
 
@@ -25,7 +26,8 @@ This directory contains comprehensive documentation for Moodo API Client. The do
 ### For Advanced Users
 1. Check [Advanced Usage](./examples/advanced-usage.md) for complex patterns
 2. Dive into [EventBus](./eventbus.md) for event-driven architecture
-3. Use [Method Generator](./method-generator.md) for dynamic API methods
+3. Use [Redis Service](./redis-service.md) for caching and rate limiting
+4. Use [Method Generator](./method-generator.md) for dynamic API methods
 
 ### Platform-Specific
 - **Web Applications**: Focus on localStorage, sessionStorage, and cookie storage
@@ -40,6 +42,7 @@ docs/
 ├── api-client.md           # HTTP methods and interceptors
 ├── authorization.md        # Authentication and token management
 ├── storage.md              # Storage solutions (localStorage, Redis, etc.)
+├── redis-service.md        # High-level Redis operations
 ├── eventbus.md             # Event-driven communication
 ├── method-generator.md     # Dynamic API method creation
 └── examples/

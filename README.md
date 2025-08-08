@@ -60,6 +60,7 @@ The API Client `instance` provides access to several powerful features:
 - **[Method Generator](./docs/method-generator.md)**: Dynamic API method creation from configuration
 - **[Authorization Service](./docs/authorization.md)**: Token management and authentication workflows
 - **[Storage Service](./docs/storage.md)**: Cross-platform storage solutions (localStorage, Redis, File, etc.)
+- **[Redis Service](./docs/redis-service.md)**: High-level Redis operations (caching, rate limiting, queuing)
 - **[EventBus](./docs/eventbus.md)**: Event-driven communication with priority and dependency support
 
 ## Documentation
@@ -72,6 +73,7 @@ The API Client `instance` provides access to several powerful features:
 - **[API Client](./docs/api-client.md)** - HTTP methods, interceptors, and request handling
 - **[Authorization](./docs/authorization.md)** - Authentication, token management, and security
 - **[Storage](./docs/storage.md)** - Data persistence across web and Node.js environments
+- **[Redis Service](./docs/redis-service.md)** - High-level Redis operations for caching, rate limiting, and queuing
 - **[EventBus](./docs/eventbus.md)** - Event-driven architecture and component communication
 - **[Method Generator](./docs/method-generator.md)** - Dynamic API method generation
 

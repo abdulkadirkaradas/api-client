@@ -285,6 +285,260 @@ class AnalyticsTracker {
 }
 ```
 
+## RedisService Advanced Patterns
+
+### E-commerce Application with Redis
+
+```typescript
+import { moodo, RedisService } from 'moodo';
+import Redis from 'ioredis';
+
+class EcommerceService {
+  private redisService: RedisService;
+
+  constructor() {
+    const moodo = new moodo({ ... });
+    this.redisService = moodo.Services.redis;
+
+    const redis = new Redis({
+      host: process.env.REDIS_HOST || 'localhost',
+      port: Number(process.env.REDIS_PORT) || 6379,
+      password: process.env.REDIS_PASSWORD,
+    });
+    this.redisService.connect(redis, 'ecommerce:');
+  }
+
+  // Product catalog caching with automatic refresh
+  async getProduct(productId: string, userId: string) {
+    // Rate limiting: 100 requests per hour per user
+    const rateLimit = await this.redisService.isAllowed(
+      `rate:product:${userId}`,
+      100,
+      3600
+    );
+
+    if (!rateLimit.allowed) {
+      throw new Error(`Rate limit exceeded. Try again in ${Math.ceil(3600 / 100)} seconds`);
+    }
+
+    // Cache product data for 5 minutes
+    return await this.redisService.setCache(
+      `product:${productId}`,
+      300,
+      async () => {
+        console.log(`Fetching product ${productId} from database...`);
+        // Simulate database fetch
+        return {
+          id: productId,
+          name: `Product ${productId}`,
+          price: Math.floor(Math.random() * 1000),
+          inventory: Math.floor(Math.random() * 100),
+          lastUpdated: new Date().toISOString()
+        };
+      }
+    );
+  }
+
+  // Cart session management
+  async addToCart(userId: string, productId: string, quantity: number) {
+    const cartKey = `cart:${userId}`;
+    
+    // Check if user has multiple cart operations in progress (deduplication)
+    const isUnique = await this.redisService.isUnique(
+      `cart_operation:${userId}:${Date.now()}`,
+      5 // 5 seconds window
+    );
+
+    if (!isUnique) {
+      throw new Error('Please wait before adding more items to cart');
+    }
+
+    // Add to cart processing queue
+    await this.redisService.pushToQueue('cart:operations', {
+      userId,
+      productId,
+      quantity: quantity.toString(),
+      action: 'add',
+      timestamp: Date.now().toString()
+    });
+
+    return { success: true, message: 'Item added to cart queue' };
+  }
+
+  // Process cart operations from queue
+  async processCartQueue() {
+    let processed = 0;
+    
+    while (await this.redisService.popFromQueue('cart:operations')) {
+      processed++;
+      console.log(`Processing cart operation ${processed}...`);
+      // Simulate cart operation processing
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    return `Processed ${processed} cart operations`;
+  }
+
+  // Order processing with duplicate prevention
+  async processOrder(orderId: string, userId: string, paymentToken: string) {
+    // Ensure order is processed only once
+    const isUnique = await this.redisService.isUnique(
+      `order:${orderId}`,
+      600 // 10 minutes window
+    );
+
+    if (!isUnique) {
+      throw new Error('Order has already been processed');
+    }
+
+    // Blacklist payment token immediately to prevent reuse
+    await this.redisService.blacklistToken(paymentToken, 86400); // 24 hours
+
+    // Simulate order processing
+    console.log(`Processing order ${orderId} for user ${userId}`);
+    
+    return {
+      orderId,
+      status: 'processed',
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  // Session-based rate limiting for sensitive operations
+  async attemptPasswordReset(email: string, ip: string) {
+    // Rate limit password reset attempts
+    const emailLimit = await this.redisService.isAllowed(
+      `pwd_reset:email:${email}`,
+      3, // 3 attempts
+      3600 // per hour
+    );
+
+    const ipLimit = await this.redisService.isAllowed(
+      `pwd_reset:ip:${ip}`,
+      10, // 10 attempts from same IP
+      3600 // per hour
+    );
+
+    if (!emailLimit.allowed) {
+      throw new Error('Too many password reset attempts for this email');
+    }
+
+    if (!ipLimit.allowed) {
+      throw new Error('Too many password reset attempts from this IP');
+    }
+
+    // Generate and cache reset token
+    const resetToken = Math.random().toString(36).substring(2, 15);
+    await this.redisService.setCache(
+      `reset_token:${resetToken}`,
+      1800, // 30 minutes
+      async () => ({ email, createdAt: Date.now() })
+    );
+
+    return {
+      message: 'Password reset email sent',
+      remaining: {
+        email: emailLimit.remaining,
+        ip: ipLimit.remaining
+      }
+    };
+  }
+}
+
+// Usage example
+const ecommerce = new EcommerceService();
+
+// Simulate API usage
+async function simulateEcommerceUsage() {
+  try {
+    // Get product with rate limiting
+    const product = await ecommerce.getProduct('123', 'user456');
+    console.log('Product:', product);
+
+    // Add items to cart
+    await ecommerce.addToCart('user456', '123', 2);
+    await ecommerce.addToCart('user456', '124', 1);
+
+    // Process cart queue
+    const result = await ecommerce.processCartQueue();
+    console.log(result);
+
+    // Process order
+    const order = await ecommerce.processOrder('order789', 'user456', 'payment_token_xyz');
+    console.log('Order:', order);
+
+    // Password reset with rate limiting
+    const resetResult = await ecommerce.attemptPasswordReset('user@example.com', '192.168.1.1');
+    console.log('Reset:', resetResult);
+
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+```
+
+### Real-time Analytics with Redis
+
+```typescript
+class AnalyticsService {
+  private redisService: RedisService;
+
+  constructor() {
+    const moodo = new moodo({ ... });
+    this.redisService = moodo.Services.redis;
+    
+    const redis = new Redis();
+    this.redisService.connect(redis, 'analytics:');
+  }
+
+  // Track page views with time-based aggregation
+  async trackPageView(page: string, userId?: string) {
+    const timestamp = Date.now();
+    const hour = new Date(timestamp).getHours();
+    const day = new Date(timestamp).toISOString().split('T')[0];
+
+    // Track overall page views
+    await this.redisService.pushToQueue(`pageviews:${page}:${day}:${hour}`, {
+      timestamp: timestamp.toString(),
+      userId: userId || 'anonymous',
+      userAgent: 'browser'
+    });
+
+    // Track unique visitors per day
+    if (userId) {
+      await this.redisService.setCache(
+        `unique_visitor:${day}:${userId}`,
+        86400, // 24 hours
+        async () => ({ firstVisit: timestamp, page })
+      );
+    }
+  }
+
+  // Get real-time analytics data
+  async getAnalytics(page: string, date: string) {
+    const analytics = {
+      totalViews: 0,
+      hourlyBreakdown: {} as Record<string, number>,
+      uniqueVisitors: 0
+    };
+
+    // Count hourly page views
+    for (let hour = 0; hour < 24; hour++) {
+      const queueKey = `pageviews:${page}:${date}:${hour}`;
+      
+      // This is a simulation - in practice you'd count queue items
+      const cached = await this.redisService.getCache(`analytics:${queueKey}`);
+      const count = cached as number || 0;
+      
+      analytics.hourlyBreakdown[hour] = count;
+      analytics.totalViews += count;
+    }
+
+    return analytics;
+  }
+}
+```
+
 ## Method Generator Patterns
 
 ### Dynamic API Client
